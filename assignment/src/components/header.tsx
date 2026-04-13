@@ -1,37 +1,12 @@
-import { Link } from "@chakra-ui/react"
+import Navigation from "./navigation"
 
 const HeaderContainer = () => {
     return ( 
         <header>
             <h1>Venue Vendors</h1>
-            <nav>
-                <Link
-                    variant="underline"
-                    href="../file path for sign-up page"
-                    colorPalette="green"
-                >
-                    Sign-up
-                </Link>
-
-                <Link
-                    variant="underline"
-                    href="../file path for sign-in page"
-                    colorPalette="green"
-                >
-                    Sign-in
-                </Link>
-
-                <Link
-                    variant="underline"
-                    href="../file path for sign-in page"
-                    colorPalette="green"
-                >
-                    Sign-out
-                </Link>
-            </nav>
-
+            <Navigation />
         </header>
     )
 }
 
-export default HeaderContainer()
+export default HeaderContainer
