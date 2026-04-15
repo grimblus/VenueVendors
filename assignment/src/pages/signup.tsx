@@ -8,6 +8,7 @@ import {
 import { useState, EventHandler, useEffect } from "react"
 import FooterContainer from "@/components/footer";
 import HeaderContainer from "@/components/header"
+import { useRouter } from "next/router";
 
 interface User {
   email: string;
@@ -19,6 +20,7 @@ const initialUsers: User[] = [
 ];
 
 export default function Signup(){
+    const router = useRouter();
     const [email, setEmail] = useState("");
     const [password1, setPassword1] = useState("");
     const [password2, setPassword2] = useState("");
@@ -64,6 +66,7 @@ export default function Signup(){
         updatedUsers = [...users, currUser];
         setUsers(updatedUsers);
         localStorage.setItem("users", JSON.stringify(updatedUsers));
+        router.push("/hirers")
       }
       setSelectedUser({ email: "", password: "" });
       setPassword1("");
