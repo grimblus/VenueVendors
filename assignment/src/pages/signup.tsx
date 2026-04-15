@@ -16,7 +16,7 @@ const initialUsers: User[] = [
   {email: "rhys@test.com", password: "rhys-admin"}, //intialising stored users for test purposes
 ];
 
-const Signup = () => {
+export default function Signup(){
     const [email, setEmail] = useState("");
     const [password1, setPassword1] = useState("");
     const [password2, setPassword2] = useState("");
