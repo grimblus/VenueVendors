@@ -16,7 +16,7 @@ const initialUsers: User[] = [
   {email: "rhys@test.com", password: "rhys-admin"}, //intialising stored users for test purposes
 ];
 
-const signup = () => {
+const Signup = () => {
     const [email, setEmail] = useState("");
     const [password1, setPassword1] = useState("");
     const [password2, setPassword2] = useState("");
@@ -28,32 +28,44 @@ const signup = () => {
     });
 
     useEffect(() => {
-    // Load pets from localStorage on component mount
+    // Load users from localStorage
     const storedUsers = localStorage.getItem("users");
     if (storedUsers) {
       setUsers(JSON.parse(storedUsers));
     } else {
       // Initialize with default data if nothing in localStorage
       setUsers(initialUsers);
-      localStorage.setItem("pets", JSON.stringify(initialUsers));
+      localStorage.setItem("users", JSON.stringify(initialUsers));
     }
   }, []);
 
     
 
-    const onClick = () =>{
+    const handleSubmit = () =>{
     //Validation checks occur here
-    let updatedUsers;
+      let updatedUsers;
+      if(!selectedUser.email || !password1 || !password2){
+        const message = 'Please fill in all fields'
+        alert(message);
+        return;
+      }
       if (password1 != password2) {
         const message = `Error: Passwords do not match`;
         alert(message);
+        return;
       }
       else{
-        setSelectedUser({ ...selectedUser, password: password1 })
-        updatedUsers = [...users, selectedUser];
+        const currUser: User = {
+          email: selectedUser.email,
+          password: password1,
+        };
+        updatedUsers = [...users, currUser];
         setUsers(updatedUsers);
         localStorage.setItem("users", JSON.stringify(updatedUsers));
       }
+      setSelectedUser({ email: "", password: "" });
+      setPassword1("");
+      setPassword2("");
     };
 
     return (
@@ -65,23 +77,26 @@ const signup = () => {
       <Fieldset.Content>
         <Field.Root>
           <Field.Label>Email Address</Field.Label>
+          <Field.RequiredIndicator />
           <Input name="email" value={selectedUser.email || ""} onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })
               }/>
         </Field.Root>
 
         <Field.Root>
           <Field.Label>Password</Field.Label>
+          <Field.RequiredIndicator />
           <Input name="password" type="password" value={password1} onChange={(e) => setPassword1(e.target.value)}/>
         </Field.Root>
 
         <Field.Root>
           <Field.Label>Confirm Password</Field.Label>
+          <Field.RequiredIndicator />
           <Input name="password2" type="password" value={password2} onChange={(e) => setPassword2(e.target.value)}/>
         </Field.Root>
 
       </Fieldset.Content>
 
-      <Button type="submit" alignSelf="flex-start">
+      <Button alignSelf="flex-start" onClick={handleSubmit}>
         Submit
       </Button>
     </Fieldset.Root>
