@@ -1,7 +1,7 @@
 //Andrew
 import React from "react";
 
-const Footer = () => {
+const FooterContainer = () => {
   return (
     <footer className="bg-gray-800 text-white p-4">
       <div className="container mx-auto">
@@ -17,4 +17,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default FooterContainer;

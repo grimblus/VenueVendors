@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
-import Footer from "@/components/footer";
+import FooterContainer from "@/components/footer";
 import HeaderContainer from "@/components/header"
 
 const geistSans = Geist({
@@ -17,7 +17,7 @@ export default function Home() {
   return (
     <div className="mainpage">
       <HeaderContainer />
-      <Footer/>
+      <FooterContainer/>
     </div>
     // <div
     //   className={`${geistSans.className} ${geistMono.className} flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black`}
