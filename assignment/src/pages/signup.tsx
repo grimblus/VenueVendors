@@ -6,6 +6,8 @@ import {
   Stack,
 } from "@chakra-ui/react"
 import { useState, EventHandler, useEffect } from "react"
+import FooterContainer from "@/components/footer";
+import HeaderContainer from "@/components/header"
 
 interface User {
   email: string;
@@ -47,12 +49,12 @@ export default function Signup(){
       if(!selectedUser.email || !password1 || !password2){
         const message = 'Please fill in all fields'
         alert(message);
-        return;
+        return
       }
       if (password1 != password2) {
         const message = `Error: Passwords do not match`;
         alert(message);
-        return;
+        return
       }
       else{
         const currUser: User = {
@@ -69,36 +71,40 @@ export default function Signup(){
     };
 
     return (
-    <Fieldset.Root size="lg" maxW="md">
-      <Stack>
-        <Fieldset.Legend>Enter</Fieldset.Legend>
-      </Stack>
+      <div className='signupPage'>
+        <HeaderContainer />
+          <Fieldset.Root size="lg" maxW="md">
+            <Stack>
+              <Fieldset.Legend>Enter</Fieldset.Legend>
+            </Stack>
 
-      <Fieldset.Content>
-        <Field.Root>
-          <Field.Label>Email Address</Field.Label>
-          <Field.RequiredIndicator />
-          <Input name="email" value={selectedUser.email || ""} onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })
-              }/>
-        </Field.Root>
+            <Fieldset.Content>
+              <Field.Root>
+                <Field.Label>Email Address</Field.Label>
+                <Field.RequiredIndicator />
+                <Input name="email" value={selectedUser.email || ""} onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })
+                    }/>
+              </Field.Root>
 
-        <Field.Root>
-          <Field.Label>Password</Field.Label>
-          <Field.RequiredIndicator />
-          <Input name="password" type="password" value={password1} onChange={(e) => setPassword1(e.target.value)}/>
-        </Field.Root>
+              <Field.Root>
+                <Field.Label>Password</Field.Label>
+                <Field.RequiredIndicator />
+                <Input name="password" type="password" value={password1} onChange={(e) => setPassword1(e.target.value)}/>
+              </Field.Root>
 
-        <Field.Root>
-          <Field.Label>Confirm Password</Field.Label>
-          <Field.RequiredIndicator />
-          <Input name="password2" type="password" value={password2} onChange={(e) => setPassword2(e.target.value)}/>
-        </Field.Root>
+              <Field.Root>
+                <Field.Label>Confirm Password</Field.Label>
+                <Field.RequiredIndicator />
+                <Input name="password2" type="password" value={password2} onChange={(e) => setPassword2(e.target.value)}/>
+              </Field.Root>
 
-      </Fieldset.Content>
+            </Fieldset.Content>
 
-      <Button alignSelf="flex-start" onClick={handleSubmit}>
-        Submit
-      </Button>
-    </Fieldset.Root>
+            <Button alignSelf="flex-start" onClick={handleSubmit}>
+              Submit
+            </Button>
+          </Fieldset.Root>
+          <FooterContainer />
+        </div>
   )
 }

@@ -1,6 +1,8 @@
 import { Link, Button } from "@chakra-ui/react"
 import NextLink from "next/link"
 import { useRouter } from "next/navigation"
+import { Box } from "@chakra-ui/react"
+
 
 const Navigation = () => {
     const router = useRouter();
@@ -11,14 +13,17 @@ const Navigation = () => {
 
     return (
         <nav style={{ display: "flex", gap: "1rem" }}>
-            <Link
+            <Box>
+                <Link
                 as={NextLink}
                 href="/signup"
                 colorPalette="green"
             >
                 Sign-up
             </Link>
+            </Box>
 
+            <Box>
             <Link
                 as={NextLink}
                 href="/signin"
@@ -26,7 +31,9 @@ const Navigation = () => {
             >
                 Sign-in
             </Link>
+            </Box>
 
+            <Box>
             <Button
                 variant="plain"
                 colorPalette="green"
@@ -34,6 +41,7 @@ const Navigation = () => {
             >
                 Sign Out
             </Button>
+            </Box>
         </nav>
     )
 }
