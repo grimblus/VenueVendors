@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
 import FooterContainer from "@/components/footer";
-import HeaderContainer from "@/components/header"
+import HeaderContainer from "@/components/header";
+import { useRouter } from "next/router";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,9 +15,16 @@ const geistMono = Geist_Mono({
 });
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <div className="mainpage">
-      <HeaderContainer />
+      <HeaderContainer/>
+        <div>
+          <button onClick={() => router.push("/hirers")}>click me to go to hirers page</button>
+          <p></p>
+          <button onClick={() => router.push("/vendors")}>click me to go to vendors page</button>
+        </div>
       <FooterContainer/>
     </div>
     // <div
