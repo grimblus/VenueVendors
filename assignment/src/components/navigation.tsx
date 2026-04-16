@@ -1,7 +1,7 @@
 import { Link, Button } from "@chakra-ui/react"
 import NextLink from "next/link"
 import { useRouter } from "next/navigation"
-import { Box } from "@chakra-ui/react"
+import { Box, HStack } from "@chakra-ui/react"
 
 
 const Navigation = () => {
@@ -12,7 +12,8 @@ const Navigation = () => {
     }
 
     return (
-        <nav style={{ display: "flex", gap: "1rem" }}>
+        <nav>
+            <HStack>
             <Box>
                 <Link
                 as={NextLink}
@@ -42,6 +43,7 @@ const Navigation = () => {
                 Sign Out
             </Button>
             </Box>
+            </HStack>
         </nav>
     )
 }

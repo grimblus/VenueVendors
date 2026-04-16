@@ -66,6 +66,7 @@ export default function Signup(){
         updatedUsers = [...users, currUser];
         setUsers(updatedUsers);
         localStorage.setItem("users", JSON.stringify(updatedUsers));
+        alert("Signup successful! Redirecting to hirers page")
         router.push("/hirers")
       }
       setSelectedUser({ email: "", password: "" });
@@ -78,7 +79,7 @@ export default function Signup(){
         <HeaderContainer />
           <Fieldset.Root size="lg" maxW="md">
             <Stack>
-              <Fieldset.Legend>Enter</Fieldset.Legend>
+              <Fieldset.Legend>Create an account</Fieldset.Legend>
             </Stack>
 
             <Fieldset.Content>
