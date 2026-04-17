@@ -50,18 +50,28 @@ export default function HirerPage() {
         }
     }, []);
 
-
     const handleSubmit = () => {
-        const storedUsers = localStorage.getItem("users");
-        if (!storedUsers || !currentUser) return;
+        const currentUserEmail = localStorage.getItem("currentUser");
+        if (!currentUserEmail || !currentUser) return;
 
-        const users: User[] = JSON.parse(storedUsers);
-        const updatedUsers = users.map((u) =>
-            u.email === currentUser.email ? { ...u, name: usersName, phone: usersPhone } : u
-        );
+        if (!usersName || !usersPhone) {
+            alert("Please fill in all fields");
+            return;
+        } else if (!/^\d+$/.test(usersPhone)) {
+            alert("Please enter a valid phone number");
+            return;
+        } else {
+            const storedUsers = localStorage.getItem("users");
+            if (!storedUsers) return;
+            const users: User[] = JSON.parse(storedUsers);
+            const updatedUsers = users.map((u) =>
+                u.email === currentUser.email ? { ...u, name: usersName, phone: usersPhone } : u
+            );
 
-        localStorage.setItem("users", JSON.stringify(updatedUsers));
-        alert(`Profile updated!\nName: ${usersName}\nPhone: ${usersPhone}`);
+            localStorage.setItem("users", JSON.stringify(updatedUsers));
+            alert(`Profile updated!\nName: ${usersName}\nPhone: ${usersPhone}`);
+        }
+
     };
 
     return (
