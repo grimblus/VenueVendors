@@ -16,8 +16,23 @@ interface User {
 }
 
 const initialUsers: User[] = [
-  {email: "rhys@test.com", password: "rhys-admin"}, //intialising stored users for test purposes
+  {email: "rhys@test.com", password: "Rhys-admin1"}, //intialising stored users for test purposes
 ];
+
+// validates email format
+const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+// strong password check here
+const isStrongPassword = (password: string): boolean => {
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const length = password.length >= 8;
+    return hasUpperCase && hasLowerCase && hasNumber && length;
+}
 
 export default function Signin(){
     const router = useRouter();
@@ -50,6 +65,19 @@ export default function Signin(){
         alert(message);
         return
       }
+
+      // validating email and password here
+      if (!isValidEmail(selectedUser.email)) {
+      alert("Please enter a valid email address (e.g. name@example.com)");
+      return;
+    }
+
+    if (!isStrongPassword(password1)) {
+      alert(
+        "Password must be at least 8 characters and include an uppercase letter, lowercase letter, and a number"
+      );
+      return;
+    }
       // checking if entered credentials exist within local storage
       const existingUser = users.find(
         (user) => user.email === selectedUser.email
@@ -61,9 +89,10 @@ export default function Signin(){
       }
       else{
         alert("Username and/ or password is incorrect. Please try again")
+        setSelectedUser({ email: "", password: "" });
+        setPassword1("");
       }
-      setSelectedUser({ email: "", password: "" });
-      setPassword1("");
+      
     };
 
     return (

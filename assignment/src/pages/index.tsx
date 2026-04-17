@@ -17,6 +17,8 @@ const geistMono = Geist_Mono({
 export default function Home() {
   const router = useRouter();
 
+  //TODO: NEED TO ADD INFORMATION - "The landing page should display information about the 
+  //      VV web system and a navigation bar with appropriate links"
   return (
     <div className="mainpage min-h-screen flex flex-col">
       <HeaderContainer/>
@@ -24,7 +26,7 @@ export default function Home() {
           <button onClick={() => router.push("/hirers")}>click me to go to hirers page</button>
           <p></p>
           <button onClick={() => router.push("/vendors")}>click me to go to vendors page</button>
-        </div>
+        </div> 
       <FooterContainer/>
     </div>
     // <div
