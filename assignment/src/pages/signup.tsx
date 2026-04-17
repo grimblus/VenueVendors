@@ -9,14 +9,15 @@ import { useState, EventHandler, useEffect } from "react"
 import FooterContainer from "@/components/footer";
 import HeaderContainer from "@/components/header"
 import { useRouter } from "next/router";
+import { User } from "./signin";
 
-interface User {
-  email: string;
-  password: string;
-}
+// interface User {
+//   email: string;
+//   password: string;
+// }
 
 const initialUsers: User[] = [
-  {email: "rhys@test.com", password: "rhys-admin"}, //intialising stored users for test purposes
+  {email: "rhys@test.com", password: "rhys-admin", name: "", phone: ""}, //intialising stored users for test purposes
 ];
 
 export default function Signup(){
@@ -29,6 +30,8 @@ export default function Signup(){
     const [selectedUser, setSelectedUser] = useState<User>({
         email: "",
         password: "",
+        name: "",
+        phone: ""
     });
 
     useEffect(() => {
@@ -62,14 +65,17 @@ export default function Signup(){
         const currUser: User = {
           email: selectedUser.email,
           password: password1,
+          name: selectedUser.name,
+          phone: selectedUser.phone
         };
         updatedUsers = [...users, currUser];
         setUsers(updatedUsers);
+        localStorage.setItem("currentUser", currUser.email);
         localStorage.setItem("users", JSON.stringify(updatedUsers));
         alert("Signup successful! Redirecting to hirers page")
         router.push("/hirers")
       }
-      setSelectedUser({ email: "", password: "" });
+      setSelectedUser({ email: "", password: "", name: "", phone: ""});
       setPassword1("");
       setPassword2("");
     };

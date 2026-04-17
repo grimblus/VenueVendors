@@ -10,13 +10,15 @@ import FooterContainer from "@/components/footer";
 import HeaderContainer from "@/components/header"
 import { useRouter } from "next/router";
 
-interface User {
+ export interface User {
   email: string;
   password: string;
+  name?: string;
+  phone?: string;
 }
 
 const initialUsers: User[] = [
-  {email: "rhys@test.com", password: "Rhys-admin1"}, //intialising stored users for test purposes
+  {email: "rhys@test.com", password: "Rhys-admin1", name: "", phone: ""}, //intialising stored users for test purposes
 ];
 
 // validates email format
@@ -84,6 +86,7 @@ export default function Signin(){
         && user.password == password1);
 
       if(existingUser){
+        localStorage.setItem("currentUser", existingUser.email);
         alert("Login successful!")
         router.push("/vendors")
       }
