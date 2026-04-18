@@ -15,10 +15,14 @@ import {
     Stack, 
     Card, 
     Text, 
+    Dialog,
 } from "@chakra-ui/react"
 import { useState, useEffect, useRef } from "react";
 import { User } from "./signin";
 import Dropdown from "@/components/dropdown";
+import Modal from "@/components/modal";
+import placeholderImage from "../../public/placeholder_venue_image.png"
+import Image, { StaticImageData } from "next/image";
 
 export interface Venue {
     name: string;
@@ -26,6 +30,7 @@ export interface Venue {
     date: string;
     time: string;
     duration: number;
+    image?: string | StaticImageData;
 }
 
 const initialVenues: Venue[] = [
@@ -35,6 +40,7 @@ const initialVenues: Venue[] = [
     date: "17/04/2026",
     time: "20:00",
     duration: 2,
+    image: placeholderImage
   }, 
   {
     name: "Place2",
@@ -42,6 +48,7 @@ const initialVenues: Venue[] = [
     date: "18/04/2026",
     time: "19:00",
     duration: 3,
+    image: placeholderImage
   },
   {
     name: "Place3",
@@ -49,6 +56,7 @@ const initialVenues: Venue[] = [
     date: "19/04/2026",
     time: "18:00",
     duration: 4,
+    image: placeholderImage
   }
 ];
 
@@ -147,19 +155,29 @@ export default function HirerPage() {
                         {venues.map((venue, index) => (
                             <Card.Root key={index} w="full" maxW="2xl" mx="auto">
                                 <Card.Body>
-                                    <HStack>
+                                    <HStack w="100%" justifyContent="space-between">
                                     {/* Dropdown for preference list */}
                                     <Dropdown items={venues.map((place, i) => ({ label: String(i + 1), value: String(i + 1) }))} 
                                     onSelect={(item) => console.log("Preference:", item.value)}/>
 
+                                    <AbsoluteCenter>
                                     <Text textStyle="4xl">{venue.name}</Text>
-                                    <Text>Expected Guests: {venue.expectedguests}</Text>
-                                    <Text>Date: {venue.date}</Text>
-                                    <Text>Time: {venue.time}</Text>
-                                    <Text>Duration: {venue.duration} hours</Text>
-                                    <Button alignSelf="flex-start">
-                                        Apply
-                                    </Button>
+                                    </AbsoluteCenter>
+                                    <Modal
+                                        triggerLabel="Apply"
+                                        title={venue.name}
+                                        image={venue.image}
+                                        body={
+                                            <>
+                                                <Text>Expected Guests: {venue.expectedguests}</Text>
+                                                <Text>Date: {venue.date}</Text>
+                                                <Text>Time: {venue.time}</Text>
+                                                <Text>Duration: {venue.duration} hours</Text>
+                                            </>
+                                        }
+                                        confirmLabel="Apply"
+                                        onConfirm={() => console.log("Applied for", venue.name)}
+                                    />
                                     </HStack>
                                 </Card.Body>
                             </Card.Root>
