@@ -23,15 +23,8 @@ import Dropdown from "@/components/dropdown";
 import Modal from "@/components/modal";
 import placeholderImage from "../../public/placeholder_venue_image.png"
 import Image, { StaticImageData } from "next/image";
-
-export interface Venue {
-    name: string;
-    expectedguests: number;
-    date: string;
-    time: string;
-    duration: number;
-    image?: string | StaticImageData;
-}
+import VenueCard , { Venue } from "@/components/venue-card";
+import ReputationCard, { VenueReputation } from "@/components/hirer-reputation-card";
 
 const initialVenues: Venue[] = [
     {
@@ -59,14 +52,6 @@ const initialVenues: Venue[] = [
         image: placeholderImage
     }
 ];
-
-export interface VenueReputation {
-    name: string;
-    location: string;
-    eventName: string;
-    dateOfHire: string;
-    rating: number;
-}
 
 const initialReputation: VenueReputation[] = [
     {
@@ -146,7 +131,7 @@ export default function HirerPage() {
     };
 
     return (
-        <div className="mainpage min-h-screen flex flex-col">
+        <div className="hirersPage min-h-screen flex flex-col">
             <HeaderContainer/>
             <div className="mainContent flex flex-1 flex-col items-center pt-12">
                 {/* Start of hirer profile */}
@@ -192,15 +177,8 @@ export default function HirerPage() {
                             body={
                                 <Stack gap={4}>
                                 <>                        
-                                    {venueRep.map((venue, index) => (
-                                        <Card.Root key={index} w="full" maxW="2xl" mx="auto">
-                                            <Card.Body>
-                                                <Text>Location: {venue.location}</Text>
-                                                <Text>Event Name: {venue.eventName}</Text>
-                                                <Text>Date of Hire: {venue.dateOfHire}</Text>
-                                                <Text>Rating: {venue.rating}</Text>
-                                            </Card.Body>
-                                        </Card.Root>
+                                    {venueRep.map((reputation, index) => (
+                                        <ReputationCard key={index} reputation={reputation} />
                                     ))}
                                 </>
                                 </Stack>
@@ -217,36 +195,7 @@ export default function HirerPage() {
                     <Text textStyle="6xl" textAlign="center" marginTop={12}> Venues </Text>
                     <Stack mt={6} gap={4}>
                         {venues.map((venue, index) => (
-                            <Card.Root key={index} w="full" maxW="2xl" mx="auto">
-                                <Card.Body>
-                                    <HStack w="100%" justifyContent="space-between">
-                                    {/* Dropdown for preference list */}
-                                    <Dropdown items={venues.map((place, i) => ({ label: String(i + 1), value: String(i + 1) }))} 
-                                    onSelect={(item) => console.log("Preference:", item.value)}/>
-
-                                    <AbsoluteCenter>
-                                    <Text textStyle="4xl">{venue.name}</Text>
-                                    </AbsoluteCenter>
-
-                                    {/* Modal for applying and viewing */}
-                                    <Modal
-                                        triggerLabel="Apply"
-                                        title={venue.name}
-                                        image={venue.image}
-                                        body={
-                                            <>
-                                                <Text>Expected Guests: {venue.expectedguests}</Text>
-                                                <Text>Date: {venue.date}</Text>
-                                                <Text>Time: {venue.time}</Text>
-                                                <Text>Duration: {venue.duration} hours</Text>
-                                            </>
-                                        }
-                                        confirmLabel="Apply"
-                                        onConfirm={() => alert(`Applied to ${venue.name}!`)}
-                                    />
-                                    </HStack>
-                                </Card.Body>
-                            </Card.Root>
+                            <VenueCard key={index} venue={venue} index={index} venues={venues}/>
                         ))}
                     </Stack>
                 </Container>
