@@ -37,10 +37,10 @@ const Navigation = () => {
             <Box>
                 <Link
                 as={NextLink}
-                href="/venues"
+                href="/vendors"
                 colorPalette="green"
             >
-                Venue
+                Vendor
                 </Link>
             </Box>
 
