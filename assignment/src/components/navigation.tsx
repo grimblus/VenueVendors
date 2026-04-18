@@ -17,6 +17,36 @@ const Navigation = () => {
             <Box>
                 <Link
                 as={NextLink}
+                href="/"
+                colorPalette="green"
+            >
+                Home
+                </Link>
+            </Box>
+
+            <Box>
+                <Link
+                as={NextLink}
+                href="/hirers"
+                colorPalette="green"
+            >
+                Hirer
+                </Link>
+            </Box>
+
+            <Box>
+                <Link
+                as={NextLink}
+                href="/venues"
+                colorPalette="green"
+            >
+                Venue
+                </Link>
+            </Box>
+
+            <Box>
+                <Link
+                as={NextLink}
                 href="/signup"
                 colorPalette="green"
             >

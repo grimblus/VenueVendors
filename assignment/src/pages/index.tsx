@@ -23,9 +23,9 @@ export default function Home() {
     <div className="mainpage min-h-screen flex flex-col">
       <HeaderContainer/>
         <div className="mainContent flex flex-1 flex-col items-center justify-center">
-          <button onClick={() => router.push("/hirers")}>click me to go to hirers page</button>
+          {/* <button onClick={() => router.push("/hirers")}>click me to go to hirers page</button>
           <p></p>
-          <button onClick={() => router.push("/vendors")}>click me to go to vendors page</button>
+          <button onClick={() => router.push("/vendors")}>click me to go to vendors page</button> */}
         </div> 
       <FooterContainer/>
     </div>
