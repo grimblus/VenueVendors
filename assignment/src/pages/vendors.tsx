@@ -20,6 +20,7 @@ const initialApplicants: Applicant[] = [
     documentName: "Public Liability Insurance - Valid until Dec 2026",
     selected: false,
     approved: false,
+    rejected: false,
     comments: [],
   },
   {
@@ -34,6 +35,7 @@ const initialApplicants: Applicant[] = [
     documentName: "Event Permit & Insurance Certificate - Valid",
     selected: false,
     approved: false,
+    rejected: false,
     comments: [],
   },
   {
@@ -48,6 +50,7 @@ const initialApplicants: Applicant[] = [
     documentName: "Public Liability Insurance & ID Verification",
     selected: false,
     approved: false,
+    rejected:false,
     comments: [],
   },
 ];

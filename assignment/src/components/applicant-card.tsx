@@ -1,4 +1,4 @@
-import { Card, Text, Button, Fieldset, Field, Input, Stack, HStack, Box } from "@chakra-ui/react";
+import { Card, Text, Button, Field, Input, Stack, HStack, Box } from "@chakra-ui/react";
 import { useState } from "react";
 
 export interface Applicant {
@@ -16,16 +16,16 @@ export interface Applicant {
     documentName: string;
     selected: boolean;
     approved: boolean;
+    rejected: boolean;
     comments: string[];
 }
 
-//applicant card props/ variables
-export interface ApplicantCard {
-    applicant: Applicant
+export interface ApplicantCardProps {
+    applicant: Applicant;
     onUpdate: (updatedApplicant: Applicant) => void;
 }
 
-export default function ApplicantCard(props: ApplicantCard) {
+export default function ApplicantCard(props: ApplicantCardProps) {
   const applicant = props.applicant;
   const onUpdate = props.onUpdate;
 
@@ -53,6 +53,24 @@ export default function ApplicantCard(props: ApplicantCard) {
     onUpdate(updatedApplicant);
   };
 
+  const handleUnselect = () => {
+    const updatedApplicant = {
+      ...applicant,
+      selected: false,
+      comments: []
+    };
+    onUpdate(updatedApplicant);
+  };
+
+  const handleReject = () => {
+    const updatedApplicant = {
+      ...applicant,
+      rejected: true
+    };
+    onUpdate(updatedApplicant);
+    alert("Application rejected");
+  };
+
   const handleApprove = () => {
     const updatedApplicant = {
       ...applicant,
@@ -71,17 +89,21 @@ export default function ApplicantCard(props: ApplicantCard) {
               <Text textStyle="xl" fontWeight="bold">{applicant.name}</Text>
               <Text color="gray.600">{applicant.email}</Text>
             </Box>
+            {/* application status message */}
             <Box>
-              {applicant.selected && (
-                <Text color="blue.500" fontWeight="semibold"> Selected</Text>
+              {applicant.selected && !applicant.rejected && (
+                <Text color="blue.500" fontWeight="semibold">Selected</Text>
               )}
               {applicant.approved && (
-                <Text color="green.500" fontWeight="semibold"> Approved</Text>
+                <Text color="green.500" fontWeight="semibold">Approved</Text>
+              )}
+              {applicant.rejected && (
+                <Text color="red.500" fontWeight="semibold">Rejected</Text>
               )}
             </Box>
           </HStack>
 
-          {/*event details*/}
+          {/* event details */}
           <Box>
             <Text fontWeight="semibold">Event Details:</Text>
             <Text>Type: {applicant.eventType}</Text>
@@ -90,7 +112,7 @@ export default function ApplicantCard(props: ApplicantCard) {
             <Text>Requirements: {applicant.venueRequirements}</Text>
           </Box>
 
-          {/*hire history and documents*/}
+          {/* hire history of hirer and documents */}
           <Box>
             <Button 
               size="sm" 
@@ -109,7 +131,7 @@ export default function ApplicantCard(props: ApplicantCard) {
             )}
           </Box>
 
-          {/*applicant's comments here*/}
+          {/* applicant comments here */}
           {applicant.comments.length > 0 && (
             <Box>
               <Text fontWeight="semibold">Comments:</Text>
@@ -121,8 +143,8 @@ export default function ApplicantCard(props: ApplicantCard) {
             </Box>
           )}
 
-          
-          {applicant.selected && !applicant.approved && (
+          {/* Add comment feature here - only shown when selected */}
+          {applicant.selected && !applicant.approved && !applicant.rejected && (
             <Box>
               <Field.Root>
                 <Field.Label>Add Comment</Field.Label>
@@ -138,19 +160,31 @@ export default function ApplicantCard(props: ApplicantCard) {
             </Box>
           )}
 
-          
-          <HStack gap={2}>
-            {!applicant.selected && (
-              <Button colorScheme="blue" onClick={handleSelect}>
-                Select Applicant
-              </Button>
-            )}
-            {applicant.selected && !applicant.approved && (
-              <Button colorScheme="green" onClick={handleApprove}>
-                Approve & Confirm Booking
-              </Button>
-            )}
-          </HStack>
+          {/* main buttons */}
+          {!applicant.rejected && !applicant.approved && (
+            <HStack gap={2}>
+              {!applicant.selected && (
+                <>
+                  <Button colorScheme="blue" onClick={handleSelect}>
+                    Select Applicant
+                  </Button>
+                  <Button colorScheme="red" variant="outline" onClick={handleReject}>
+                    Reject Application
+                  </Button>
+                </>
+              )}
+              {applicant.selected && (
+                <>
+                  <Button colorScheme="green" onClick={handleApprove}>
+                    Approve & Confirm Booking
+                  </Button>
+                  <Button colorScheme="gray" variant="outline" onClick={handleUnselect}>
+                    Unselect
+                  </Button>
+                </>
+              )}
+            </HStack>
+          )}
         </Stack>
       </Card.Body>
     </Card.Root>
