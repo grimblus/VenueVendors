@@ -17,20 +17,10 @@ const Navigation = () => {
             <Box>
                 <Link
                 as={NextLink}
-                href="/"
-                colorPalette="green"
-            >
-                Home
-                </Link>
-            </Box>
-
-            <Box>
-                <Link
-                as={NextLink}
                 href="/hirers"
                 colorPalette="green"
             >
-                Hirer
+                Hirer's Page
                 </Link>
             </Box>
 
@@ -40,7 +30,7 @@ const Navigation = () => {
                 href="/vendors"
                 colorPalette="green"
             >
-                Vendor
+                Vendor's Page
                 </Link>
             </Box>
 
