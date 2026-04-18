@@ -10,10 +10,10 @@ interface ModalProps {
     confirmLabel?: string;
     cancelLabel?: string;
     image?: string | StaticImageData;
+    hideConfirm?: boolean;
 }
 
-
-const Modal = ({title, body, triggerLabel, onConfirm, confirmLabel, cancelLabel, image}: ModalProps) => {
+const Modal = ({title, body, triggerLabel, onConfirm, confirmLabel, cancelLabel, image, hideConfirm}: ModalProps) => {
   return (
     <Dialog.Root size="cover" placement="center">
       <Dialog.Trigger asChild>
@@ -40,7 +40,9 @@ const Modal = ({title, body, triggerLabel, onConfirm, confirmLabel, cancelLabel,
               <Dialog.ActionTrigger asChild>
                 <Button variant="outline">{cancelLabel || "Cancel"}</Button>
               </Dialog.ActionTrigger>
-              <Button onClick={onConfirm}>{confirmLabel || "Save"}</Button>
+              {!hideConfirm && (
+                <Button onClick={onConfirm}>{confirmLabel || "Confirm"}</Button>
+              )}
             </Dialog.Footer>
             <Dialog.CloseTrigger asChild>
               <CloseButton size="sm" />
@@ -49,6 +51,8 @@ const Modal = ({title, body, triggerLabel, onConfirm, confirmLabel, cancelLabel,
         </Dialog.Positioner>
       </Portal>
     </Dialog.Root>
+
+    
   )
 }
 

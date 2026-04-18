@@ -34,30 +34,62 @@ export interface Venue {
 }
 
 const initialVenues: Venue[] = [
-  {
-    name: "Place1",
-    expectedguests: 200,
-    date: "17/04/2026",
-    time: "20:00",
-    duration: 2,
-    image: placeholderImage
-  }, 
-  {
-    name: "Place2",
-    expectedguests: 500,
-    date: "18/04/2026",
-    time: "19:00",
-    duration: 3,
-    image: placeholderImage
-  },
-  {
-    name: "Place3",
-    expectedguests: 1000,
-    date: "19/04/2026",
-    time: "18:00",
-    duration: 4,
-    image: placeholderImage
-  }
+    {
+        name: "Place1",
+        expectedguests: 200,
+        date: "17/04/2026",
+        time: "20:00",
+        duration: 2,
+        image: placeholderImage
+    }, 
+    {
+        name: "Place2",
+        expectedguests: 500,
+        date: "18/04/2026",
+        time: "19:00",
+        duration: 3,
+        image: placeholderImage
+    },
+    {
+        name: "Place3",
+        expectedguests: 1000,
+        date: "19/04/2026",
+        time: "18:00",
+        duration: 4,
+        image: placeholderImage
+    }
+];
+
+export interface VenueReputation {
+    name: string;
+    location: string;
+    eventName: string;
+    dateOfHire: string;
+    rating: number;
+}
+
+const initialReputation: VenueReputation[] = [
+    {
+        name: "Place1",
+        location: "Sydney",
+        eventName: "Wedding",
+        dateOfHire: "17/04/2025",
+        rating: 4
+    },
+    {
+        name: "Place2",
+        location: "Melbourne",
+        eventName: "Conference",
+        dateOfHire: "18/04/2025",
+        rating: 5
+    },
+    {
+        name: "Place3",
+        location: "Brisbane",
+        eventName: "Birthday Party",
+        dateOfHire: "19/04/2025",
+        rating: 3
+    }
 ];
 
 export default function HirerPage() {
@@ -66,6 +98,7 @@ export default function HirerPage() {
     const [usersPhone, setUsersPhone] = useState("");
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [venues, setVenues] = useState<Venue[]>(initialVenues);
+    const [venueRep, setVenueRep] = useState<VenueReputation[]>(initialReputation);
 
     //For the update hirer profile
     useEffect(() => {
@@ -89,10 +122,12 @@ export default function HirerPage() {
 
         //Validation for empty fields and phone number(just making sure its all numbers)
         if (!usersName || !usersPhone) {
-            alert("Please fill in all fields");
+            const message = 'Please fill in all fields';
+            alert(message);
             return;
         } else if (!/^\d+$/.test(usersPhone)) {
-            alert("Please enter a valid phone number");
+            const message = 'Please enter a valid phone number';
+            alert(message);
             return;
         } else {
             //Valid
@@ -104,7 +139,8 @@ export default function HirerPage() {
             );
 
             localStorage.setItem("users", JSON.stringify(updatedUsers));
-            alert(`Profile updated!\nName: ${usersName}\nPhone: ${usersPhone}`);
+            const message = `Profile updated!\nName: ${usersName}\nPhone: ${usersPhone}`;
+            alert(message);
         }
 
     };
@@ -116,6 +152,7 @@ export default function HirerPage() {
                 {/* Start of hirer profile */}
                 <Container maxW="container.lg">
                     <Text textStyle="6xl" textAlign="center" marginTop={12}> Hirer Profile </Text>
+                    <Stack gap={2}>
                     <Center>
                         <Card.Root w="full" maxW="2xl" mx="auto" mt={6}>
                             <Card.Body >
@@ -147,7 +184,34 @@ export default function HirerPage() {
                             </Card.Body>
                         </Card.Root>
                     </Center>
+                    <Center>
+                        {/* Hirer Reputation */}
+                        <Modal
+                            triggerLabel="Reputation"
+                            title="Your Hirer's Reputation"
+                            body={
+                                <Stack gap={4}>
+                                <>                        
+                                    {venueRep.map((venue, index) => (
+                                        <Card.Root key={index} w="full" maxW="2xl" mx="auto">
+                                            <Card.Body>
+                                                <Text>Location: {venue.location}</Text>
+                                                <Text>Event Name: {venue.eventName}</Text>
+                                                <Text>Date of Hire: {venue.dateOfHire}</Text>
+                                                <Text>Rating: {venue.rating}</Text>
+                                            </Card.Body>
+                                        </Card.Root>
+                                    ))}
+                                </>
+                                </Stack>
+                            }
+                            hideConfirm={true}
+                            cancelLabel="Close"
+                        />
+                    </Center>
+                    </Stack>
                 </Container>
+                
                 {/* Start of venues list */}
                 <Container maxW="container.lg">
                     <Text textStyle="6xl" textAlign="center" marginTop={12}> Venues </Text>
@@ -163,6 +227,8 @@ export default function HirerPage() {
                                     <AbsoluteCenter>
                                     <Text textStyle="4xl">{venue.name}</Text>
                                     </AbsoluteCenter>
+
+                                    {/* Modal for applying and viewing */}
                                     <Modal
                                         triggerLabel="Apply"
                                         title={venue.name}
@@ -176,7 +242,7 @@ export default function HirerPage() {
                                             </>
                                         }
                                         confirmLabel="Apply"
-                                        onConfirm={() => console.log("Applied for", venue.name)}
+                                        onConfirm={() => alert(`Applied to ${venue.name}!`)}
                                     />
                                     </HStack>
                                 </Card.Body>
