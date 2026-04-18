@@ -1,8 +1,24 @@
 import FooterContainer from "@/components/footer";
 import HeaderContainer from "@/components/header";
-import { AbsoluteCenter, Container, Box, Button, Center, Field, Fieldset, For, HStack, Input, NativeSelect, Stack, Card, Text } from "@chakra-ui/react"
-import { useState, useEffect } from "react";
+import { 
+    AbsoluteCenter, 
+    Container, 
+    Box, 
+    Button, 
+    Center, 
+    Field, 
+    Fieldset, 
+    For, 
+    HStack, 
+    Input, 
+    NativeSelect, 
+    Stack, 
+    Card, 
+    Text, 
+} from "@chakra-ui/react"
+import { useState, useEffect, useRef } from "react";
 import { User } from "./signin";
+import Dropdown from "@/components/dropdown";
 
 export interface Venue {
     name: string;
@@ -26,16 +42,24 @@ const initialVenues: Venue[] = [
     date: "18/04/2026",
     time: "19:00",
     duration: 3,
+  },
+  {
+    name: "Place3",
+    expectedguests: 1000,
+    date: "19/04/2026",
+    time: "18:00",
+    duration: 4,
   }
 ];
 
 export default function HirerPage() {
-
+    //For the update hirer profile
     const [usersName, setUsersName] = useState("");
     const [usersPhone, setUsersPhone] = useState("");
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [venues, setVenues] = useState<Venue[]>(initialVenues);
-    
+
+    //For the update hirer profile
     useEffect(() => {
         const storedUsers = localStorage.getItem("users");
         const currentUserEmail = localStorage.getItem("currentUser");
@@ -50,10 +74,12 @@ export default function HirerPage() {
         }
     }, []);
 
+    //For the hirer profile
     const handleSubmit = () => {
         const currentUserEmail = localStorage.getItem("currentUser");
         if (!currentUserEmail || !currentUser) return;
 
+        //Validation for empty fields and phone number(just making sure its all numbers)
         if (!usersName || !usersPhone) {
             alert("Please fill in all fields");
             return;
@@ -61,6 +87,7 @@ export default function HirerPage() {
             alert("Please enter a valid phone number");
             return;
         } else {
+            //Valid
             const storedUsers = localStorage.getItem("users");
             if (!storedUsers) return;
             const users: User[] = JSON.parse(storedUsers);
@@ -78,6 +105,7 @@ export default function HirerPage() {
         <div className="mainpage min-h-screen flex flex-col">
             <HeaderContainer/>
             <div className="mainContent flex flex-1 flex-col items-center pt-12">
+                {/* Start of hirer profile */}
                 <Container maxW="container.lg">
                     <Text textStyle="6xl" textAlign="center" marginTop={12}> Hirer Profile </Text>
                     <Center>
@@ -111,7 +139,33 @@ export default function HirerPage() {
                             </Card.Body>
                         </Card.Root>
                     </Center>
-                </Container>  
+                </Container>
+                {/* Start of venues list */}
+                <Container maxW="container.lg">
+                    <Text textStyle="6xl" textAlign="center" marginTop={12}> Venues </Text>
+                    <Stack mt={6} gap={4}>
+                        {venues.map((venue, index) => (
+                            <Card.Root key={index} w="full" maxW="2xl" mx="auto">
+                                <Card.Body>
+                                    <HStack>
+                                    {/* Dropdown for preference list */}
+                                    <Dropdown items={venues.map((place, i) => ({ label: String(i + 1), value: String(i + 1) }))} 
+                                    onSelect={(item) => console.log("Preference:", item.value)}/>
+
+                                    <Text textStyle="4xl">{venue.name}</Text>
+                                    <Text>Expected Guests: {venue.expectedguests}</Text>
+                                    <Text>Date: {venue.date}</Text>
+                                    <Text>Time: {venue.time}</Text>
+                                    <Text>Duration: {venue.duration} hours</Text>
+                                    <Button alignSelf="flex-start">
+                                        Apply
+                                    </Button>
+                                    </HStack>
+                                </Card.Body>
+                            </Card.Root>
+                        ))}
+                    </Stack>
+                </Container>
                 </div>
             <FooterContainer/>
         </div>
