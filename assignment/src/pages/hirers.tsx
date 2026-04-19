@@ -1,28 +1,14 @@
 import FooterContainer from "@/components/footer";
 import HeaderContainer from "@/components/header";
-import { 
-    AbsoluteCenter, 
+import {
     Container, 
-    Box, 
-    Button, 
     Center, 
-    Field, 
-    Fieldset, 
-    For, 
-    HStack, 
-    Input, 
-    NativeSelect, 
     Stack, 
-    Card, 
     Text, 
-    Dialog,
 } from "@chakra-ui/react"
-import { useState, useEffect, useRef } from "react";
-import { User } from "./signin";
-import Dropdown from "@/components/dropdown";
+import { useState } from "react";
 import Modal from "@/components/modal";
 import placeholderImage from "../../public/placeholder_venue_image.png"
-import Image, { StaticImageData } from "next/image";
 import VenueCard , { Venue } from "@/components/venue-card";
 import ReputationCard, { VenueReputation } from "@/components/hirer-reputation-card";
 import SearchBar from "@/components/search-bar";
@@ -30,7 +16,7 @@ import HirerProfileCard from "@/components/hirer-profile-update";
 
 const initialVenues: Venue[] = [
     {
-        name: "Place1",
+        name: "Melbourne Town Hall",
         expectedguests: 200,
         date: "17/04/2026",
         time: "20:00",
@@ -38,7 +24,7 @@ const initialVenues: Venue[] = [
         image: placeholderImage
     }, 
     {
-        name: "Place2",
+        name: "Sydney Opera House",
         expectedguests: 500,
         date: "18/04/2026",
         time: "19:00",
@@ -46,7 +32,7 @@ const initialVenues: Venue[] = [
         image: placeholderImage
     },
     {
-        name: "Place3",
+        name: "Brisbane Convention Centre",
         expectedguests: 1000,
         date: "19/04/2026",
         time: "18:00",
@@ -57,21 +43,21 @@ const initialVenues: Venue[] = [
 
 const initialReputation: VenueReputation[] = [
     {
-        name: "Place1",
-        location: "Sydney",
+        name: "Melbourne Town Hall",
+        location: "Melbourne",
         eventName: "Wedding",
         dateOfHire: "17/04/2025",
         rating: 4
     },
     {
-        name: "Place2",
-        location: "Melbourne",
+        name: "Sydney Opera House",
+        location: "Sydney",
         eventName: "Conference",
         dateOfHire: "18/04/2025",
         rating: 5
     },
     {
-        name: "Place3",
+        name: "Brisbane Convention Centre",
         location: "Brisbane",
         eventName: "Birthday Party",
         dateOfHire: "19/04/2025",
@@ -82,6 +68,11 @@ const initialReputation: VenueReputation[] = [
 export default function HirerPage() {
     const [venues, setVenues] = useState<Venue[]>(initialVenues);
     const [venueRep, setVenueRep] = useState<VenueReputation[]>(initialReputation);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const filteredVenues = venues.filter((venue) =>
+        venue.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <div className="hirersPage min-h-screen flex flex-col">
@@ -91,41 +82,45 @@ export default function HirerPage() {
                 <Container maxW="container.lg">
                     <Text textStyle="6xl" textAlign="center" marginTop={12}> Hirer Profile </Text>
                     <Stack gap={2}>
-                    <Center>
-                        <HirerProfileCard/>
-                    </Center>
-                    <Center>
-                        {/* Hirer Reputation Modal */}
-                        <Modal
-                            triggerLabel="Reputation"
-                            title="Your Hirer's Reputation"
-                            body={
-                                <Stack gap={4}>
-                                <>                        
-                                    {venueRep.map((reputation, index) => (
-                                        <ReputationCard key={index} reputation={reputation} />
-                                    ))}
-                                </>
-                                </Stack>
-                            }
-                            hideConfirm={true}
-                            cancelLabel="Close"
-                        />
-                    </Center>
+                        <Center>
+                            <HirerProfileCard/>
+                        </Center>
+                        <Center>
+                            {/* Hirer Reputation Modal */}
+                            <Modal
+                                triggerLabel="Reputation"
+                                title="Your Hirer's Reputation"
+                                body={
+                                    <Stack gap={4}>
+                                    <>                        
+                                        {venueRep.map((reputation, index) => (
+                                            <ReputationCard key={index} reputation={reputation} />
+                                        ))}
+                                    </>
+                                    </Stack>
+                                }
+                                hideConfirm={true}
+                                cancelLabel="Close"
+                            />
+                        </Center>
                     </Stack>
                 </Container>
                 
                 {/* Start of venues list */}
                 <Container maxW="container.lg">
                     <Text textStyle="6xl" textAlign="center" marginTop={12}> Venues </Text>
-                    <SearchBar placeholder="Search for venues..." onSearch={(query) => console.log("Search query:", query)} />
+                    <SearchBar placeholder="Search for venues..." onSearch={(query) => setSearchQuery(query)} />
                     <Stack mt={6} gap={4}>
-                        {venues.map((venue, index) => (
-                            <VenueCard key={index} venue={venue} index={index} venues={venues}/>
-                        ))}
+                        {filteredVenues.length > 0 ? (
+                            filteredVenues.map((venue, index) => (
+                                <VenueCard key={index} venue={venue} index={index} venues={venues}/>
+                            ))
+                        ) : (
+                            <Text textAlign="center">No venues found.</Text>
+                        )}
                     </Stack>
                 </Container>
-                </div>
+            </div>
             <FooterContainer/>
         </div>
     );

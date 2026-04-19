@@ -23,19 +23,29 @@ export default function HirerProfileCard() {
 
     const handleSubmit = () => {
         const currentUserEmail = localStorage.getItem("currentUser");
-        if (!currentUserEmail || !currentUser) return;
-
-        //Validation for empty fields and phone number(just making sure its all numbers)
+        //If no current user is logged in, nothing happens,
+        if (!currentUserEmail || !currentUser) {
+            const message = 'Please log in to update your profile';
+            alert(message);
+            return;
+        }
+        //Validation for empty fields
         if (!usersName || !usersPhone) {
             const message = 'Please fill in all fields';
             alert(message);
             return;
+        //Validation for phone number (only digits)
         } else if (!/^\d+$/.test(usersPhone)) {
             const message = 'Please enter a valid phone number';
             alert(message);
             return;
+        //Validation for name (only letters, at least 2 characters)
+        } else if (!/^[a-zA-Z]{2,40}$/.test(usersName)) {
+            const message = 'Please enter a valid name (only letters, at least 2 characters)';
+            alert(message);
+            return;
+        //Valid
         } else {
-            //Valid
             const storedUsers = localStorage.getItem("users");
             if (!storedUsers) return;
             const users: User[] = JSON.parse(storedUsers);
