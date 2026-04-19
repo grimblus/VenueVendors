@@ -80,6 +80,11 @@ export default function HirerPage() {
     const [venueRep, setVenueRep] = useState<VenueReputation[]>(initialReputation);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchDomain, setSearchDomain] = useState("Name");
+    const [preferredVenues, setPreferredVenues] = useState<Venue[]>(() => {
+        if (typeof window === "undefined") return [];
+        const localPref = localStorage.getItem("preferredVenues");
+        return localPref ? JSON.parse(localPref) : [];
+    })
 
     const filteredVenues = venues.filter((venue) => {
         const query = searchQuery.toLowerCase();
@@ -104,6 +109,17 @@ export default function HirerPage() {
             }
         }
     );
+
+    const handleAddPreference = (venue: Venue, rank: number) => {
+        setPreferredVenues((prev) => {
+            const withoutVenue = prev.filter((v) => v.name != venue.name);
+            const cleared = withoutVenue.filter((v) => v.preference != rank);
+            const venueWithRank = { ...venue, preference: rank };
+            const updated = [...cleared, venueWithRank].sort((a, b) => (a.preference ?? 0) - (b.preference ?? 0));
+            localStorage.setItem("preferredVenues", JSON.stringify(updated));
+            return updated;
+        });
+    };
 
     return (
         <div className="hirersPage min-h-screen flex flex-col">
@@ -141,8 +157,14 @@ export default function HirerPage() {
                                 body={
                                     <Stack gap={4}>
                                     <>                        
-                                        {venues.map((venue, index) => (
-                                            <VenueCard key={index} venue={venue} index={index} venues={venues} />
+                                        {preferredVenues.map((venue, index) => (
+                                            <VenueCard 
+                                                key={index} 
+                                                venue={venue} 
+                                                index={index} 
+                                                venues={venues} 
+                                                preferredVenues={preferredVenues} 
+                                                onPreferenceChange={(rank) => handleAddPreference(venue, rank)} />
                                         ))}
                                     </>
                                     </Stack>

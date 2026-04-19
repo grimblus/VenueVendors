@@ -14,22 +14,26 @@ export interface Venue {
     image?: string | StaticImageData;
     type?: string;
     suitableEvents?: string[];
+    preference?: number;
 }
 
 export interface VenueCardProps {
     venue: Venue;
     index: number;
     venues: Venue[];
-    preference?: number;
-    usedPreference?: string[];
-    onPreferenceChange?: (value: string) => void;
+    preferredVenues?: Venue[];
+    onPreferenceChange?: (rank: number) => void;
 }
 
 export default function VenueCard(props: VenueCardProps) {
-  const { venue, index, venues, preference, usedPreference } = props;
+  const { venue, index, venues, onPreferenceChange, preferredVenues } = props;
   const [hireRequirements, setHireRequirements] = useState("");
   const [hireCapacity, setHireCapacity] = useState(1);
   const [hireDate, setHireDate] = useState("");
+  const [selectedRank, setSelectedRank] = useState(1);
+
+  const preferredRank = preferredVenues?.find((v) => v.name == venue.name)?.preference;
+  const isPreferred = preferredRank != undefined;
 
   const handleApplySubmit = () => {
     //Validation for empty fields
@@ -39,13 +43,13 @@ export default function VenueCard(props: VenueCardProps) {
       return;
     //Valid
     } else {
-      const message = `Reservation submitted!\nDate: ${hireDate}\nReason: ${hireRequirements}\nCapacity: ${hireCapacity}`;
+      const message = `Venue application submitted`;
       alert(message);
     }
   };
 
   const handlePreferenceSubmit = () => {
-
+    onPreferenceChange?.(selectedRank);
   };
 
   return (
@@ -53,11 +57,15 @@ export default function VenueCard(props: VenueCardProps) {
       <Card.Body>
         <HStack w="100%" justifyContent="space-between">
           <HStack>
-            <Dropdown
-              items={venues.map((_, i) => ({ label: String(i + 1), value: String(i + 1) }))}
-              onSelect={(item) => console.log("Preference:", item.value)}
-            />
-            <Button w="50%" onClick={handlePreferenceSubmit}>Apply Preference</Button>
+            {isPreferred ? ( <Text>{preferredRank + 1}</Text> ) : (
+              <>
+                <Dropdown
+                  items={venues.map((_, i) => ({ label: String(i + 1), value: String(i + 1) }))}
+                  onSelect={(item) => setSelectedRank(Number(item.value))}
+                />
+                <Button size="sm" onClick={handlePreferenceSubmit}>Apply Preference</Button>
+              </>
+            )}
           </HStack>
 
           <AbsoluteCenter>
