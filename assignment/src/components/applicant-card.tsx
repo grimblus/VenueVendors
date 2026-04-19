@@ -109,9 +109,11 @@ export default function ApplicantCard(props: ApplicantCardProps) {
               <Text textStyle="xl" fontWeight="bold">{applicant.name}</Text>
               <Text color="gray.600">{applicant.email}</Text>
               
-              <Text color="yellow.solid" fontWeight="semibold">
-              <TiStar /> Rating: {averageRating} {applicant.ratingCount > 0 && `(${applicant.ratingCount} reviews)`}
-              </Text>
+              <HStack color="yellow.solid" fontWeight="semibold">
+                <TiStar/>
+                <Text>Rating: {averageRating} {applicant.ratingCount > 0 && `(${applicant.ratingCount} reviews)`}
+                </Text>
+              </HStack>
             </Box>
             <Box>
               {applicant.selected && !applicant.rejected && (
@@ -155,7 +157,7 @@ export default function ApplicantCard(props: ApplicantCardProps) {
             )}
           </Box>
 
-          {/* applicant comments here */}
+          {/* applicant comments displayed here */}
           {applicant.comments.length > 0 && (
             <Box>
               <Text fontWeight="semibold">Comments:</Text>
@@ -167,7 +169,7 @@ export default function ApplicantCard(props: ApplicantCardProps) {
             </Box>
           )}
 
-          {/* add comment - only shown when selected but not approved/rejected */}
+          {/* feature for adding comments here */}
           {applicant.selected && !applicant.approved && !applicant.rejected && (
             <Box>
               <Field.Root>
