@@ -4,7 +4,8 @@ import {
     Container, 
     Center, 
     Stack, 
-    Text, 
+    Text,
+    HStack, 
 } from "@chakra-ui/react"
 import { useState } from "react";
 import Modal from "@/components/modal";
@@ -110,12 +111,13 @@ export default function HirerPage() {
             <div className="mainContent flex flex-1 flex-col items-center pt-12">
                 {/* Start of hirer profile */}
                 <Container maxW="container.lg">
-                    <Text textStyle="6xl" textAlign="center" marginTop={12}> Hirer Profile </Text>
+                    <Text textStyle="6xl" textAlign="center" marginTop={12}> Your Profile </Text>
                     <Stack gap={2}>
                         <Center>
                             <HirerProfileCard/>
                         </Center>
                         <Center>
+                            <HStack>
                             {/* Hirer Reputation Modal */}
                             <Modal
                                 triggerLabel="Reputation"
@@ -132,6 +134,23 @@ export default function HirerPage() {
                                 hideConfirm={true}
                                 cancelLabel="Close"
                             />
+                            {/* Preferred Venues Modal */}
+                            <Modal
+                                triggerLabel="Preferred Venues"
+                                title="Your Preferred Venues"
+                                body={
+                                    <Stack gap={4}>
+                                    <>                        
+                                        {venues.map((venue, index) => (
+                                            <VenueCard key={index} venue={venue} index={index} venues={venues} />
+                                        ))}
+                                    </>
+                                    </Stack>
+                                }
+                                hideConfirm={true}
+                                cancelLabel="Close"
+                            />
+                            </HStack>
                         </Center>
                     </Stack>
                 </Container>
