@@ -22,7 +22,7 @@ export default function VenueCard(props: VenueCardProps) {
   const { venue, index, venues } = props;
 
   return (
-    <Card.Root w="full" maxW="2xl" mx="auto">
+    <Card.Root w="full" mx="auto">
       <Card.Body>
         <HStack w="100%" justifyContent="space-between">
           <Dropdown
