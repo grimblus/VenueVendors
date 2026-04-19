@@ -1,5 +1,7 @@
 import { Card, Text, Button, Field, Input, Stack, HStack, Box } from "@chakra-ui/react";
 import { useState } from "react";
+import { Icon } from "@chakra-ui/react"
+import { TiStar } from "react-icons/ti";
 
 export interface Applicant {
     //applicant personal info
@@ -19,6 +21,9 @@ export interface Applicant {
     approved: boolean;
     rejected: boolean;
     comments: string[];
+    //star-rating below (total star count and total amount of ratings coming from users)
+    totalStars: number;
+    ratingCount: number;
 }
 
 export interface ApplicantCardProps {
@@ -32,6 +37,13 @@ export default function ApplicantCard(props: ApplicantCardProps) {
 
   const [commentText, setCommentText] = useState("");
   const [showDetails, setShowDetails] = useState(false);
+  const [showRating, setShowRating] = useState(false);
+  const [selectedRating, setSelectedRating] = useState<number>(0);
+
+  // getting average rating
+  const averageRating = applicant.ratingCount > 0 
+    ? (applicant.totalStars / applicant.ratingCount).toFixed(1) 
+    : "No ratings yet";
 
   const handleAddComment = () => {
     if (!commentText.trim()) {
@@ -46,12 +58,19 @@ export default function ApplicantCard(props: ApplicantCardProps) {
     setCommentText("");
   };
 
-  const handleSelect = () => {
+  const handleSelectWithRating = () => {
+    if (selectedRating === 0) {
+      alert("Please select a rating (1-5 stars)");
+      return;
+    }
     const updatedApplicant = {
       ...applicant,
-      selected: true
+      selected: true,
+      totalStars: applicant.totalStars + selectedRating,
+      ratingCount: applicant.ratingCount + 1
     };
     onUpdate(updatedApplicant);
+    setShowRating(false);
   };
 
   const handleUnselect = () => {
@@ -89,17 +108,20 @@ export default function ApplicantCard(props: ApplicantCardProps) {
             <Box>
               <Text textStyle="xl" fontWeight="bold">{applicant.name}</Text>
               <Text color="gray.600">{applicant.email}</Text>
+              
+              <Text color="yellow.solid" fontWeight="semibold">
+              <TiStar /> Rating: {averageRating} {applicant.ratingCount > 0 && `(${applicant.ratingCount} reviews)`}
+              </Text>
             </Box>
-            {/* application status message */}
             <Box>
               {applicant.selected && !applicant.rejected && (
-                <Text color="blue.500" fontWeight="semibold">Selected</Text>
+                <Text color="blue.500" fontWeight="semibold">✓ Selected</Text>
               )}
               {applicant.approved && (
-                <Text color="green.500" fontWeight="semibold">Approved</Text>
+                <Text color="green.500" fontWeight="semibold">✓ Approved</Text>
               )}
               {applicant.rejected && (
-                <Text color="red.500" fontWeight="semibold">Rejected</Text>
+                <Text color="red.500" fontWeight="semibold">✗ Rejected</Text>
               )}
             </Box>
           </HStack>
@@ -116,8 +138,9 @@ export default function ApplicantCard(props: ApplicantCardProps) {
           {/* hire history of hirer and documents */}
           <Box>
             <Button 
-              size="sm" 
-              variant="ghost" 
+              size="sm"
+              colorPalette="cyan.solid" 
+              variant="outline" 
               onClick={() => setShowDetails(!showDetails)}
             >
               {showDetails ? "Hide" : "View"} Hire History & Documents
@@ -144,7 +167,7 @@ export default function ApplicantCard(props: ApplicantCardProps) {
             </Box>
           )}
 
-          {/* Add comment feature here - only shown when selected */}
+          {/* add comment - only shown when selected but not approved/rejected */}
           {applicant.selected && !applicant.approved && !applicant.rejected && (
             <Box>
               <Field.Root>
@@ -161,12 +184,39 @@ export default function ApplicantCard(props: ApplicantCardProps) {
             </Box>
           )}
 
-          {/* main buttons */}
+          {/* rating option that shows when application is selected*/}
+          {showRating && (
+            <Box p={3} bg="bg.muted" borderRadius="md">
+              <Text fontWeight="semibold" mb={2}>Rate this applicant (1-5 stars):</Text>
+              <HStack gap={2}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Button
+                    key={star}
+                    size="sm"
+                    colorScheme={selectedRating >= star ? "orange" : "gray"}
+                    onClick={() => setSelectedRating(star)}
+                  >
+                    {star}<TiStar />
+                  </Button>
+                ))}
+              </HStack>
+              <HStack gap={2} mt={3}>
+                <Button size="sm" colorPalette="blue" onClick={handleSelectWithRating}>
+                  Confirm Selection
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => setShowRating(false)}>
+                  Cancel
+                </Button>
+              </HStack>
+            </Box>
+          )}
+
+          {/* Action buttons - don't show if rejected or approved */}
           {!applicant.rejected && !applicant.approved && (
             <HStack gap={2}>
               {!applicant.selected && (
                 <>
-                  <Button colorScheme="blue" onClick={handleSelect}>
+                  <Button colorScheme="blue" onClick={() => setShowRating(true)}>
                     Select Applicant
                   </Button>
                   <Button colorScheme="red" variant="outline" onClick={handleReject}>
