@@ -13,7 +13,9 @@ interface ModalProps {
     hideConfirm?: boolean;
 }
 
-const Modal = ({title, body, triggerLabel, onConfirm, confirmLabel, cancelLabel, image, hideConfirm}: ModalProps) => {
+const Modal = (props: ModalProps) => {
+  const { title, body, triggerLabel, onConfirm, confirmLabel, cancelLabel, image, hideConfirm } = props;
+
   return (
     <Dialog.Root size="cover" placement="center">
       <Dialog.Trigger asChild>
