@@ -7,6 +7,7 @@ export interface Applicant {
     email: string;
     name: string;
     //event info      
+    venueName: string;
     eventType: string;
     eventDate: string;
     guestCount: number;
@@ -122,7 +123,7 @@ export default function ApplicantCard(props: ApplicantCardProps) {
               {showDetails ? "Hide" : "View"} Hire History & Documents
             </Button>
             {showDetails && (
-              <Box mt={2} p={3} bg="gray.50" borderRadius="md">
+              <Box mt={2} p={3} bg="bg.panel" borderRadius="md">
                 <Text fontWeight="semibold">Previous Hires:</Text>
                 <Text mb={2}>{applicant.previousHires}</Text>
                 <Text fontWeight="semibold">Compliance Document:</Text>
@@ -136,7 +137,7 @@ export default function ApplicantCard(props: ApplicantCardProps) {
             <Box>
               <Text fontWeight="semibold">Comments:</Text>
               {applicant.comments.map((comment, idx) => (
-                <Text key={idx} p={2} bg="gray.50" borderRadius="md" mt={1}>
+                <Text key={idx} p={2} bg="bg.panel" borderRadius="md" mt={1}>
                   {comment}
                 </Text>
               ))}
