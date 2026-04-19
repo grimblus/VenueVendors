@@ -5,11 +5,14 @@ import { StaticImageData } from "next/image"
 
 export interface Venue {
     name: string;
+    location?: string;
     expectedguests: number;
     date: string;
     time: string;
     duration: number;
     image?: string | StaticImageData;
+    type?: string;
+    suitableEvents?: string[];
 }
 
 export interface VenueCardProps {
@@ -44,6 +47,10 @@ export default function VenueCard(props: VenueCardProps) {
                 <Text>Date: {venue.date}</Text>
                 <Text>Time: {venue.time}</Text>
                 <Text>Duration: {venue.duration} hours</Text>
+                {venue.type && <Text>Type: {venue.type}</Text>}
+                {venue.suitableEvents && venue.suitableEvents.length > 0 && (
+                  <Text>Suitable Events: {venue.suitableEvents.join(", ")}</Text>
+                )}
               </>
             }
             confirmLabel="Apply"

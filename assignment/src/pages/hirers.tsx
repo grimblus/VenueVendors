@@ -21,7 +21,10 @@ const initialVenues: Venue[] = [
         date: "17/04/2026",
         time: "20:00",
         duration: 2,
-        image: placeholderImage
+        image: placeholderImage,
+        type: "Event Space",
+        suitableEvents: ["Wedding Reception", "Conference", "Birthday Party"],
+        location: "Melbourne"
     }, 
     {
         name: "Sydney Opera House",
@@ -29,7 +32,10 @@ const initialVenues: Venue[] = [
         date: "18/04/2026",
         time: "19:00",
         duration: 3,
-        image: placeholderImage
+        image: placeholderImage,
+        type: "Performing Arts Centre",
+        suitableEvents: ["Concert", "Theater", "Dance Performance"],
+        location: "Sydney"
     },
     {
         name: "Brisbane Convention Centre",
@@ -37,7 +43,10 @@ const initialVenues: Venue[] = [
         date: "19/04/2026",
         time: "18:00",
         duration: 4,
-        image: placeholderImage
+        image: placeholderImage,
+        type: "Convention Centre",
+        suitableEvents: ["Conference", "Exhibition", "Trade Show", "Birthday Party"],
+        location: "Brisbane"
     }
 ];
 
@@ -45,14 +54,14 @@ const initialReputation: VenueReputation[] = [
     {
         name: "Melbourne Town Hall",
         location: "Melbourne",
-        eventName: "Wedding",
+        eventName: "Wedding Reception",
         dateOfHire: "17/04/2025",
         rating: 4
     },
     {
         name: "Sydney Opera House",
         location: "Sydney",
-        eventName: "Conference",
+        eventName: "Concert",
         dateOfHire: "18/04/2025",
         rating: 5
     },
@@ -69,9 +78,30 @@ export default function HirerPage() {
     const [venues, setVenues] = useState<Venue[]>(initialVenues);
     const [venueRep, setVenueRep] = useState<VenueReputation[]>(initialReputation);
     const [searchQuery, setSearchQuery] = useState("");
+    const [searchDomain, setSearchDomain] = useState("Name");
 
-    const filteredVenues = venues.filter((venue) =>
-        venue.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredVenues = venues.filter((venue) => {
+        const query = searchQuery.toLowerCase();
+            if (searchDomain == "Name") {
+                console.log("Checking name for query:", query);
+                return venue.name.toLowerCase().includes(query);
+            } else if (searchDomain == "Location") {
+                console.log("Checking location for query:", query);
+                return venue.location?.toLowerCase().includes(query);
+            } else if (searchDomain == "Capacity") {
+                console.log("Checking capacity for query:", query);
+                const capacityQuery = parseInt(query);
+                return venue.expectedguests >= capacityQuery;
+            } else if (searchDomain == "Type") {
+                console.log("Checking type for query:", query);
+                return venue.type?.toLowerCase().includes(query);
+            } else if (searchDomain == "Suitable Events") {
+                console.log("Checking suitable events for query:", query);
+                return venue.suitableEvents?.some(event => event.toLowerCase().includes(query));
+            } else {
+                return false;
+            }
+        }
     );
 
     return (
@@ -109,7 +139,11 @@ export default function HirerPage() {
                 {/* Start of venues list */}
                 <Container maxW="container.lg">
                     <Text textStyle="6xl" textAlign="center" marginTop={12}> Venues </Text>
-                    <SearchBar placeholder="Search for venues..." onSearch={(query) => setSearchQuery(query)} />
+                    <SearchBar 
+                        placeholder="Search for venues..." 
+                        onSearch={(query) => setSearchQuery(query)} 
+                        onDomainChange={(domain) => setSearchDomain(domain)} 
+                        hasDomain={true}/>
                     <Stack mt={6} gap={4}>
                         {filteredVenues.length > 0 ? (
                             filteredVenues.map((venue, index) => (
