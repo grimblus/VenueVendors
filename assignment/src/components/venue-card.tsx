@@ -27,31 +27,38 @@ export interface VenueCardProps {
 
 export default function VenueCard(props: VenueCardProps) {
   const { venue, index, venues, preference, usedPreference } = props;
-  const [hireReason, setHireReason] = useState("");
-  const [hireDuration, setHireDuration] = useState(1);
+  const [hireRequirements, setHireRequirements] = useState("");
+  const [hireCapacity, setHireCapacity] = useState(1);
   const [hireDate, setHireDate] = useState("");
 
- const handleSubmit = () => {
-        //Validation for empty fields
-        if (!hireDate || !hireReason || !hireDuration) {
-            const message = 'Please fill in all fields';
-            alert(message);
-            return;
-        //Valid
-        } else {
-            const message = `Reservation submitted!\nDate: ${hireDate}\nReason: ${hireReason}\nDuration: ${hireDuration} hours`;
-            alert(message);
-        }
-    };
+  const handleApplySubmit = () => {
+    //Validation for empty fields
+    if (!hireDate || !hireRequirements || !hireCapacity) {
+      const message = 'Please fill in all fields';
+      alert(message);
+      return;
+    //Valid
+    } else {
+      const message = `Reservation submitted!\nDate: ${hireDate}\nReason: ${hireRequirements}\nCapacity: ${hireCapacity}`;
+      alert(message);
+    }
+  };
+
+  const handlePreferenceSubmit = () => {
+
+  };
 
   return (
     <Card.Root w="full" mx="auto">
       <Card.Body>
         <HStack w="100%" justifyContent="space-between">
-          <Dropdown
-            items={venues.map((_, i) => ({ label: String(i + 1), value: String(i + 1) }))}
-            onSelect={(item) => console.log("Preference:", item.value)}
-          />
+          <HStack>
+            <Dropdown
+              items={venues.map((_, i) => ({ label: String(i + 1), value: String(i + 1) }))}
+              onSelect={(item) => console.log("Preference:", item.value)}
+            />
+            <Button w="50%" onClick={handlePreferenceSubmit}>Apply Preference</Button>
+          </HStack>
 
           <AbsoluteCenter>
             <Text textStyle="4xl">{venue.name}</Text>
@@ -82,12 +89,12 @@ export default function VenueCard(props: VenueCardProps) {
                       <HStack gap = {4} w='100%'>
                         <Field.Root>    
                         <Field.Label>Reason for Hiring</Field.Label>
-                        <Input name="reason" placeholder="Enter your reason for hiring" value={hireReason} onChange={(e) => setHireReason(e.target.value)}/>
+                        <Input name="reason" placeholder="Enter your hiring requirements" value={hireRequirements} onChange={(e) => setHireRequirements(e.target.value)}/>
                         </Field.Root>
                 
                         <Field.Root>
-                        <Field.Label>Hire Duration</Field.Label>
-                        <Input name="duration" type="number" placeholder="Enter hire duration in hours" value={hireDuration} onChange={(e) => setHireDuration(Number(e.target.value))}/>
+                        <Field.Label>Hire Capacity</Field.Label>
+                        <Input name="capacity" type="number" placeholder="Enter expected number of guests" value={hireCapacity} onChange={(e) => setHireCapacity(Number(e.target.value))}/>
                         </Field.Root>
 
                         <Field.Root>
@@ -102,7 +109,7 @@ export default function VenueCard(props: VenueCardProps) {
               </>
             }
             confirmLabel="Apply"
-            onConfirm={handleSubmit}
+            onConfirm={handleApplySubmit}
           />
         </HStack>
       </Card.Body>
