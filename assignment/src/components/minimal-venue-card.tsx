@@ -1,5 +1,5 @@
 import { Card, HStack, Text, Button } from "@chakra-ui/react";
-import Venue from "@/components/venue-card";
+import { Venue } from "@/components/venue-card";
 
 export interface VendorVenueCardProps {
   venue: Venue;

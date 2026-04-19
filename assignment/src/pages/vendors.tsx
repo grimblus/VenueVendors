@@ -4,8 +4,11 @@ import FooterContainer from "@/components/footer";
 import HeaderContainer from "@/components/header";
 import ApplicantCard, { type Applicant } from "@/components/applicant-card";
 import VendorVenueCard from "@/components/minimal-venue-card";
-import { type Venue } from "@/components/venue-card";
+import { Venue } from "@/components/venue-card";
 import hallImage from "../../public/melbhall.png";
+import { HStack, Button } from "@chakra-ui/react"
+import { TiStar } from "react-icons/ti";
+
 
 //initialising dummy data for venues
 const initialVenues: Venue[] = [
@@ -102,6 +105,19 @@ export default function VendorsPage() {
     }
   }, []);
 
+
+  const sortByHighestRating = () => {
+      const sorted = [...applicants].sort((a, b) => {
+        const avgA = a.ratingCount ? a.totalStars / a.ratingCount : 0;
+        const avgB = b.ratingCount ? b.totalStars / b.ratingCount : 0;
+        return avgB - avgA;
+      });
+
+      setApplicants(sorted);
+      localStorage.setItem("applicants", JSON.stringify(sorted));
+      alert("Applicants have been sorted!")
+    };
+
   //updating application
   const handleUpdate = (updatedApplicant: Applicant) => {
     const updatedApplicants = applicants.map((app) =>
@@ -146,6 +162,9 @@ export default function VendorsPage() {
                 {/* show applicants when venue is selected */}
                 {selectedVenue === venue.name && (
                   <Box mt={4} ml={8}>
+                    <Button size="sm" mb={3} onClick={sortByHighestRating}>
+                      Sort by Reputation Rating (<TiStar />)
+                    </Button>
                     {filteredApplicants.length > 0 ? (
                       <Stack gap={4}>
                         {filteredApplicants.map((applicant) => (
