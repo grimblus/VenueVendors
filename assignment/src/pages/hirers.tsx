@@ -188,7 +188,13 @@ export default function HirerPage() {
                     <Stack mt={6} gap={4}>
                         {filteredVenues.length > 0 ? (
                             filteredVenues.map((venue, index) => (
-                                <VenueCard key={index} venue={venue} index={index} venues={venues}/>
+                                <VenueCard 
+                                key={index} 
+                                venue={venue} 
+                                index={index} 
+                                venues={venues}
+                                preferredVenues={preferredVenues} 
+                                onPreferenceChange={(rank) => handleAddPreference(venue, rank)}/>
                             ))
                         ) : (
                             <Text textAlign="center">No venues found.</Text>

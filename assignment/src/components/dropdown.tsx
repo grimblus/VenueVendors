@@ -25,7 +25,11 @@ const dropdown = ({ items, onSelect }: DropdownProps) => {
 
     const listbox = useListbox({
         collection,
-        onValueChange() {
+        onValueChange(details) {
+            const selected = details.items[0];
+            if (selected) {
+                onSelect?.(selected);
+            }
             setOpen(false)
             setInputValue("")
             triggerRef.current?.focus()

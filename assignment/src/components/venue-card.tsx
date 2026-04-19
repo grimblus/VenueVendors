@@ -57,7 +57,7 @@ export default function VenueCard(props: VenueCardProps) {
       <Card.Body>
         <HStack w="100%" justifyContent="space-between">
           <HStack>
-            {isPreferred ? ( <Text>{preferredRank + 1}</Text> ) : (
+            {isPreferred ? ( <Text>{preferredRank}</Text> ) : (
               <>
                 <Dropdown
                   items={venues.map((_, i) => ({ label: String(i + 1), value: String(i + 1) }))}
