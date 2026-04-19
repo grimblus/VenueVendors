@@ -36,6 +36,8 @@ const initialApplicants: Applicant[] = [
     approved: false,
     rejected: false,
     comments: [],
+    totalStars: 0,
+    ratingCount: 0,
   },
   {
     id: "2",
@@ -52,6 +54,8 @@ const initialApplicants: Applicant[] = [
     approved: false,
     rejected: false,
     comments: [],
+    totalStars: 0,
+    ratingCount: 0,
   },
   {
     id: "3",
@@ -68,6 +72,8 @@ const initialApplicants: Applicant[] = [
     approved: false,
     rejected: false,
     comments: [],
+    totalStars: 0,
+    ratingCount: 0,
   },
 ];
 

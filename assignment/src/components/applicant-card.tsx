@@ -195,7 +195,7 @@ export default function ApplicantCard(props: ApplicantCardProps) {
                   <Button
                     key={star}
                     size="sm"
-                    colorScheme={selectedRating >= star ? "orange" : "gray"}
+                    colorPalette={selectedRating >= star ? "orange" : "gray"}
                     onClick={() => setSelectedRating(star)}
                   >
                     {star}<TiStar />
@@ -218,20 +218,20 @@ export default function ApplicantCard(props: ApplicantCardProps) {
             <HStack gap={2}>
               {!applicant.selected && (
                 <>
-                  <Button colorScheme="blue" onClick={() => setShowRating(true)}>
+                  <Button colorPalette="blue" onClick={() => setShowRating(true)}>
                     Select Applicant
                   </Button>
-                  <Button colorScheme="red" variant="outline" onClick={handleReject}>
+                  <Button colorPalette="red" variant="outline" onClick={handleReject}>
                     Reject Application
                   </Button>
                 </>
               )}
               {applicant.selected && (
                 <>
-                  <Button colorScheme="green" onClick={handleApprove}>
+                  <Button colorPalette="green" onClick={handleApprove}>
                     Approve & Confirm Booking
                   </Button>
-                  <Button colorScheme="gray" variant="outline" onClick={handleUnselect}>
+                  <Button colorPalette="gray" variant="outline" onClick={handleUnselect}>
                     Unselect
                   </Button>
                 </>
