@@ -10,5 +10,7 @@ Name: Rhys Vu
 ID: s4093409
 Enrolled prac: pra01-03-Fri-12:30-Veronika_Stephanie
 
+bello
+
 github url:
-https://github.com/rmit-fsd-2026-s1/a1-fsd-pra01-04-wed-6-30pm-liam-team-6
+https://github.com/rmit-fsd-2026-s1/a2-fsd-pra01-06-wed-2-30pm-yousaf-t25
