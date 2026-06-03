@@ -1,120 +1,145 @@
-import {
-  Button,
-  Field,
-  Fieldset,
-  Input,
-  Stack,
-} from "@chakra-ui/react"
-import { useState, EventHandler, useEffect } from "react"
-import FooterContainer from "@/components/footer";
-import HeaderContainer from "@/components/header"
+import { useState } from "react";
 import { useRouter } from "next/router";
-import { User } from "./signin";
+import HeaderContainer from "@/components/header";
+import FooterContainer from "@/components/footer";
+import { Button, Field, Fieldset, Input, Stack, Text } from "@chakra-ui/react";
 
-// interface User {
-//   email: string;
-//   password: string;
-// }
+const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
 
-const initialUsers: User[] = [
-  {email: "rhys@test.com", password: "rhys-admin", name: "", phone: ""}, //intialising stored users for test purposes
-];
+const isStrongPassword = (password: string): boolean => {
+    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&^#\-_]).{6,}$/;
+    return strongPasswordRegex.test(password);
+};
 
-export default function Signup(){
+export default function Signup() {
     const router = useRouter();
     const [email, setEmail] = useState("");
-    const [password1, setPassword1] = useState("");
-    const [password2, setPassword2] = useState("");
-        
-    const [users, setUsers] = useState<User[]>([]);
-    const [selectedUser, setSelectedUser] = useState<User>({
-        email: "",
-        password: "",
-        name: "",
-        phone: ""
-    });
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-    // Load users from localStorage
-    const storedUsers = localStorage.getItem("users");
-    if (storedUsers) {
-      setUsers(JSON.parse(storedUsers));
-    } else {
-      // Initialize with default data if nothing in localStorage
-      setUsers(initialUsers);
-      localStorage.setItem("users", JSON.stringify(initialUsers));
-    }
-  }, []);
+    const handleSubmit = async () => {
+        setError("");
 
-    
+        if (!email || !password || !confirmPassword || !firstName || !lastName) {
+            setError("Please fill in all fields");
+            return;
+        }
+        if (!isValidEmail(email)) {
+            setError("Please enter a valid email address");
+            return;
+        }
+        if (!isStrongPassword(password)) {
+            setError("Password must be at least 6 characters and contain uppercase, lowercase, and special character");
+            return;
+        }
+        if (password !== confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
 
-    const handleSubmit = () =>{
-    //Validation checks occur here
-      let updatedUsers;
-      if(!selectedUser.email || !password1 || !password2){
-        const message = 'Please fill in all fields'
-        alert(message);
-        return
-      }
-      if (password1 != password2) {
-        const message = `Error: Passwords do not match`;
-        alert(message);
-        return
-      }
-      else{
-        const currUser: User = {
-          email: selectedUser.email,
-          password: password1,
-          name: selectedUser.name,
-          phone: selectedUser.phone
-        };
-        updatedUsers = [...users, currUser];
-        setUsers(updatedUsers);
-        localStorage.setItem("currentUser", currUser.email);
-        localStorage.setItem("users", JSON.stringify(updatedUsers));
-        alert("Signup successful! Redirecting to hirers page")
-        router.push("/hirers")
-      }
-      setSelectedUser({ email: "", password: "", name: "", phone: ""});
-      setPassword1("");
-      setPassword2("");
+        setLoading(true);
+
+        try {
+            const response = await fetch("http://localhost:3001/api/users/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password, firstName, lastName }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.message);
+                return;
+            }
+
+            alert("Sign up successful! Please sign in.");
+            router.push("/signin");
+        } catch (err) {
+            setError("Failed to connect to server. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-      <div className='signupPage'>
-        <HeaderContainer />
-          <Fieldset.Root size="lg" maxW="md">
-            <Stack>
-              <Fieldset.Legend>Create an account</Fieldset.Legend>
-            </Stack>
+        <div className="signupPage min-h-screen flex flex-col">
+            <HeaderContainer />
+            <div className="mainContent flex flex-1 flex-col items-center justify-center">
+                <Fieldset.Root size="lg" maxW="md">
+                    <Stack>
+                        <Fieldset.Legend>Create an account</Fieldset.Legend>
+                    </Stack>
 
-            <Fieldset.Content>
-              <Field.Root>
-                <Field.Label>Email Address</Field.Label>
-                <Field.RequiredIndicator />
-                <Input name="email" value={selectedUser.email || ""} onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })
-                    }/>
-              </Field.Root>
+                    <Fieldset.Content>
+                        <Field.Root>
+                            <Field.Label>First Name</Field.Label>
+                            <Input
+                                name="firstName"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                            />
+                        </Field.Root>
 
-              <Field.Root>
-                <Field.Label>Password</Field.Label>
-                <Field.RequiredIndicator />
-                <Input name="password" type="password" value={password1} onChange={(e) => setPassword1(e.target.value)}/>
-              </Field.Root>
+                        <Field.Root>
+                            <Field.Label>Last Name</Field.Label>
+                            <Input
+                                name="lastName"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                            />
+                        </Field.Root>
 
-              <Field.Root>
-                <Field.Label>Confirm Password</Field.Label>
-                <Field.RequiredIndicator />
-                <Input name="password2" type="password" value={password2} onChange={(e) => setPassword2(e.target.value)}/>
-              </Field.Root>
+                        <Field.Root>
+                            <Field.Label>Email Address</Field.Label>
+                            <Input
+                                name="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </Field.Root>
 
-            </Fieldset.Content>
+                        <Field.Root>
+                            <Field.Label>Password</Field.Label>
+                            <Input
+                                name="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </Field.Root>
 
-            <Button alignSelf="flex-start" onClick={handleSubmit}>
-              Submit
-            </Button>
-          </Fieldset.Root>
-          <FooterContainer />
+                        <Field.Root>
+                            <Field.Label>Confirm Password</Field.Label>
+                            <Input
+                                name="confirmPassword"
+                                type="password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                            />
+                        </Field.Root>
+
+                        {error && <Text color="red.500" fontSize="sm">{error}</Text>}
+                    </Fieldset.Content>
+
+                    <Button
+                        alignSelf="flex-start"
+                        onClick={handleSubmit}
+                        disabled={loading}
+                    >
+                        {loading ? "Signing up..." : "Sign Up"}
+                    </Button>
+                </Fieldset.Root>
+            </div>
+            <FooterContainer />
         </div>
-  )
+    );
 }

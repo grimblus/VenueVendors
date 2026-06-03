@@ -1,4 +1,3 @@
-// backend/controllers/ProfileController.ts
 import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { User } from "../entities/User";
@@ -25,7 +24,7 @@ export const getProfile = async (req: Request, res: Response) => {
 };
 
 export const updateProfile = async (req: Request, res: Response) => {
-    const { email } = req.params;
+    const email = req.params.email as string;
     const { firstName, lastName, phone } = req.body;
 
     const user = await userRepository.findOne({ where: { email } });
