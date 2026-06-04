@@ -13,7 +13,8 @@ export interface Venue {
     dateHeld: string;
     time: string;
     duration: number;
-    image?: string | StaticImageData;
+    image?: string | StaticImageData; // kept for backwards compatibility
+    imageUrl?: string;
     eventType?: string;
     suitableEvents?: string[];
     preference?: number;
@@ -111,7 +112,7 @@ export default function VenueCard(props: VenueCardProps) {
           <Modal
             triggerLabel="Apply"
             title={venue.name}
-            image={venue.image}
+            image={venue.imageUrl || venue.image}
             body={
               <>
                 <Text>Expected Guests: {venue.expectedGuests}</Text>
