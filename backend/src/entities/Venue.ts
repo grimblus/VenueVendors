@@ -21,19 +21,6 @@ export class Venue {
   name: string;
 
   @Column()
-  expectedGuests: number;
-
-  @Column()
-  dateHeld: Date;
-
-  // Time stored as string in "HH:mm", there wasnt a time type so Im doing string
-  @Column()
-  time: string;
-
-  @Column()
-  duration: number;
-
-  @Column()
   eventType: string;
 
   @Column("simple-array")

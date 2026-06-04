@@ -17,6 +17,9 @@ export class Booking {
   eventName: string;
 
   @Column()
+  expectedGuests: string;
+
+  @Column()
   date: Date;
 
   // Time stored as string in "HH:mm", there wasnt a time type so Im doing string
