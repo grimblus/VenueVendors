@@ -4,6 +4,7 @@ import { Venue } from "../entities/Venue";
 
 const venueRepo = AppDataSource.getRepository(Venue);
 
+//for hirer
 export const getAllVenues = async (req: Request, res: Response) => {
   const venues = await venueRepo.find({ 
     relations: {
@@ -13,6 +14,7 @@ export const getAllVenues = async (req: Request, res: Response) => {
   return res.json(venues);
 };
 
+//for vendor
 export const getVendorVenues = async (req: Request, res: Response) => {
     const vendorId = Number(req.params.vendorId);
     const venues = await venueRepo.find({
