@@ -20,7 +20,7 @@ export class User {
   @Column({ nullable: true })
   phone: string;
 
-  @Column({ default: "hirer" })
+  @Column()
   role: string;
 
   @CreateDateColumn()

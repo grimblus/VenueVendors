@@ -16,6 +16,10 @@ const isStrongPassword = (password: string): boolean => {
 
 export const signUp = async (req: Request, res: Response) => {
     const { email, password, firstName, lastName, phone, role } = req.body;
+    
+    console.log("=== SIGNUP REQUEST ===");
+    console.log("Body:", req.body);
+    console.log("Role received:", role);
 
     if (!email || !password || !firstName || !lastName) {
         return res.status(400).json({ message: "Email, password, first name and last name are required" });

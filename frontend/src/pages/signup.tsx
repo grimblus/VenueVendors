@@ -23,12 +23,12 @@ export default function Signup() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    const [role, setRole] = useState("hirer");
+    const [role, setRole] = useState("");
 
     const handleSubmit = async () => {
         setError("");
 
-        if (!email || !password || !confirmPassword || !firstName || !lastName) {
+        if (!email || !password || !confirmPassword || !firstName || !lastName || !role) {
             setError("Please fill in all fields");
             return;
         }
@@ -111,8 +111,12 @@ export default function Signup() {
                                     border: "1px solid #ccc",
                                     fontFamily: "Arial",
                                     fontSize: "14px",
+                                    backgroundColor: "white",
+                                    color: "black",
+                                    cursor: "pointer",
                                 }}
                             >
+                                <option value="" disabled>Select a role...</option>
                                 <option value="hirer">Hirer</option>
                                 <option value="vendor">Vendor</option>
                             </select>
