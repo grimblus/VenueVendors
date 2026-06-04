@@ -11,7 +11,7 @@ export const AppDataSource = new DataSource({
   host: "diptodatabase.cn2ems8y2mfe.ap-southeast-2.rds.amazonaws.com",
   port: 1433,
   username: "s4095942",
-  password: "AL53?)~]",
+  password: "DigBuh2000!@#$",
   database: "s4095942",
 
   entities: [User, Venue, Booking, Reputation, PreferredVenue],
