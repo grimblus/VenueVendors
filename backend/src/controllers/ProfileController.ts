@@ -5,9 +5,9 @@ import { User } from "../entities/User";
 const userRepository = AppDataSource.getRepository(User);
 
 export const getProfile = async (req: Request, res: Response) => {
-    const email = req.params.email as string;
+    const id = Number(req.params.id);
 
-    const user = await userRepository.findOne({ where: { email } });
+    const user = await userRepository.findOne({ where: { id } });
     if (!user) {
         return res.status(404).json({ message: "User not found" });
     }
@@ -24,10 +24,10 @@ export const getProfile = async (req: Request, res: Response) => {
 };
 
 export const updateProfile = async (req: Request, res: Response) => {
-    const email = req.params.email as string;
+    const id = Number(req.params.id);
     const { firstName, lastName, phone } = req.body;
 
-    const user = await userRepository.findOne({ where: { email } });
+    const user = await userRepository.findOne({ where: { id } });
     if (!user) {
         return res.status(404).json({ message: "User not found" });
     }

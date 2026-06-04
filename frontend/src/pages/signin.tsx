@@ -28,13 +28,13 @@ const isStrongPassword = (password: string): boolean => {
 
 export default function Signin(){
     const router = useRouter();
-    const [password1, setPassword1] = useState("");
+    const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
     const { setCurrentUser } = useAuth();
 
     const handleSubmit = async () => {
     //Validation checks occur here
-      if(!email || !password1){
+      if(!email || !password){
         const message = 'Please fill in all fields'
         alert(message);
         return
@@ -46,7 +46,7 @@ export default function Signin(){
       return;
     }
 
-    if (!isStrongPassword(password1)) {
+    if (!isStrongPassword(password)) {
       alert(
         "Password must be at least 8 characters and include an uppercase letter, lowercase letter, and a number"
       );
@@ -56,7 +56,7 @@ export default function Signin(){
       const response = await fetch("http://localhost:3001/api/users/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password1 }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
@@ -97,13 +97,13 @@ export default function Signin(){
               <Field.Root>
                 <Field.Label>Email Address</Field.Label>
                 <Field.RequiredIndicator />
-                <Input name="email" value={email || ""} onChange={(e) => setEmail(e.target.value)}/>
+                <Input name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
               </Field.Root>
 
               <Field.Root>
                 <Field.Label>Password</Field.Label>
                 <Field.RequiredIndicator />
-                <Input name="password" type="password" value={password1} onChange={(e) => setPassword1(e.target.value)}/>
+                <Input name="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
               </Field.Root>
             </Fieldset.Content>
 
