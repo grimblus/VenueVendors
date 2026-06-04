@@ -7,8 +7,18 @@ import venueRoutes from "./routes/venue.routes";
 import bookingRoutes from "./routes/booking.routes";
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type"],
+}));
+
 app.use(express.json());
+
+app.get("/test", (req, res) => {
+    res.json({ message: "Backend is reachable" });
+});
 
 // routes
 app.use("/api/users", userRoutes);
