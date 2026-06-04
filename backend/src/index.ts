@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import { AppDataSource } from "./data-source";
 import userRoutes from "./routes/user.routes";
-import venueRoutes from "./routes/venute.routes";
+import venueRoutes from "./routes/venue.routes";
 import bookingRoutes from "./routes/booking.routes";
 
 const app = express();

@@ -43,8 +43,14 @@ export const getBookingsByHirer = async (req: Request, res: Response) => {
     const hirerId = Number(req.params.hirerId);
 
     const bookings = await bookingRepo.find({
-        where: { hirer: { id: hirerId } },
-        relations: { venue: true }
+        where: { 
+            hirer: { 
+                id: hirerId 
+            } 
+        },
+        relations: { 
+            venue: true 
+        }
     });
 
     return res.json(bookings);
