@@ -14,78 +14,39 @@ import VenueCard , { Venue } from "@/components/venue-card";
 import ReputationCard, { VenueReputation } from "@/components/hirer-reputation-card";
 import SearchBar from "@/components/search-bar";
 import HirerProfileCard from "@/components/hirer-profile-update";
-
-const initialVenues: Venue[] = [
-    {
-        name: "Melbourne Town Hall",
-        expectedguests: 200,
-        date: "17/04/2026",
-        time: "20:00",
-        duration: 2,
-        image: placeholderImage,
-        type: "Event Space",
-        suitableEvents: ["Wedding Reception", "Conference", "Birthday Party"],
-        location: "Melbourne"
-    }, 
-    {
-        name: "Sydney Opera House",
-        expectedguests: 500,
-        date: "18/04/2026",
-        time: "19:00",
-        duration: 3,
-        image: placeholderImage,
-        type: "Performing Arts Centre",
-        suitableEvents: ["Concert", "Theater", "Dance Performance"],
-        location: "Sydney"
-    },
-    {
-        name: "Brisbane Convention Centre",
-        expectedguests: 1000,
-        date: "19/04/2026",
-        time: "18:00",
-        duration: 4,
-        image: placeholderImage,
-        type: "Convention Centre",
-        suitableEvents: ["Conference", "Exhibition", "Trade Show", "Birthday Party"],
-        location: "Brisbane"
-    }
-];
-
-const initialReputation: VenueReputation[] = [
-    {
-        name: "Melbourne Town Hall",
-        location: "Melbourne",
-        eventName: "Wedding Reception",
-        dateOfHire: "17/04/2025",
-        rating: 4
-    },
-    {
-        name: "Sydney Opera House",
-        location: "Sydney",
-        eventName: "Concert",
-        dateOfHire: "18/04/2025",
-        rating: 5
-    },
-    {
-        name: "Brisbane Convention Centre",
-        location: "Brisbane",
-        eventName: "Birthday Party",
-        dateOfHire: "19/04/2025",
-        rating: 3
-    }
-];
+import { useAuth } from "@/context/AuthContext";
+import { useEffect } from "react";
 
 export default function HirerPage() {
-    const [venues, setVenues] = useState<Venue[]>(initialVenues);
-    const [venueRep, setVenueRep] = useState<VenueReputation[]>(initialReputation);
+    const [venues, setVenues] = useState<Venue[]>([]);
+    const [venueRep, setVenueRep] = useState<VenueReputation[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchDomain, setSearchDomain] = useState("Name");
-    const [preferredVenues, setPreferredVenues] = useState<Venue[]>(() => {
-        if (typeof window === "undefined") return [];
-        const localPref = localStorage.getItem("preferredVenues");
-        return localPref ? JSON.parse(localPref) : [];
-    })
+    const [preferredVenues, setPreferredVenues] = useState<Venue[]>([]);
+    const { currentUser } = useAuth();
 
+    useEffect(() => {
+        //venues
+        fetch("http://localhost:3001/api/venues")
+            .then(res => res.json())
+            .then(data => setVenues(data))
+            .catch(console.error);
+
+        if (currentUser) {
+            //pref venues
+            fetch(`http://localhost:3001/api/preferred-venues/${currentUser.id}`)
+                .then(res => res.json())
+                .then(data => setPreferredVenues(data))
+                .catch(console.error);
+
+            //venue rep
+            fetch(`http://localhost:3001/api/reputation/${currentUser.id}`)
+                .then(res => res.json())
+                .then(data => setVenueRep(data))
+                .catch(console.error);
+        }
+    }, [currentUser]);
+    
     const filteredVenues = venues.filter((venue) => {
         const query = searchQuery.toLowerCase();
             if (searchDomain == "Name") {
@@ -97,10 +58,10 @@ export default function HirerPage() {
             } else if (searchDomain == "Capacity") {
                 console.log("Checking capacity for query:", query);
                 const capacityQuery = parseInt(query);
-                return venue.expectedguests >= capacityQuery;
+                return venue.expectedGuests >= capacityQuery;
             } else if (searchDomain == "Type") {
                 console.log("Checking type for query:", query);
-                return venue.type?.toLowerCase().includes(query);
+                return venue.eventType?.toLowerCase().includes(query);
             } else if (searchDomain == "Suitable Events") {
                 console.log("Checking suitable events for query:", query);
                 return venue.suitableEvents?.some(event => event.toLowerCase().includes(query));
@@ -110,16 +71,22 @@ export default function HirerPage() {
         }
     );
 
-    const handleAddPreference = (venue: Venue, rank: number) => {
-        setPreferredVenues((prev) => {
-            const withoutVenue = prev.filter((v) => v.name != venue.name);
-            const cleared = withoutVenue.filter((v) => v.preference != rank);
-            const venueWithRank = { ...venue, preference: rank };
-            const updated = [...cleared, venueWithRank].sort((a, b) => (a.preference ?? 0) - (b.preference ?? 0));
-            localStorage.setItem("preferredVenues", JSON.stringify(updated));
-            return updated;
+    const handleAddPreference = async (venue: Venue, rank: number) => {
+        await fetch("http://localhost:3001/api/preferred-venues", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                hirerId: currentUser?.id,
+                venueId: venue.id,
+                rank
+            })
         });
+
+        const res = await fetch(`http://localhost:3001/api/preferred-venues/${currentUser?.id}`);
+        const data = await res.json();
+        setPreferredVenues(data);
     };
+
 
     return (
         <div className="hirersPage min-h-screen flex flex-col">
@@ -189,12 +156,12 @@ export default function HirerPage() {
                         {filteredVenues.length > 0 ? (
                             filteredVenues.map((venue, index) => (
                                 <VenueCard 
-                                key={index} 
-                                venue={venue} 
-                                index={index} 
-                                venues={venues}
-                                preferredVenues={preferredVenues} 
-                                onPreferenceChange={(rank) => handleAddPreference(venue, rank)}/>
+                                    key={index} 
+                                    venue={venue} 
+                                    index={index} 
+                                    venues={venues}
+                                    preferredVenues={preferredVenues} 
+                                    onPreferenceChange={(rank) => handleAddPreference(venue, rank)}/>
                             ))
                         ) : (
                             <Text textAlign="center">No venues found.</Text>

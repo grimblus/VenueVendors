@@ -3,18 +3,25 @@ import Dropdown from "@/components/dropdown";
 import Modal from "@/components/modal";
 import { StaticImageData } from "next/image"
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export interface Venue {
+    id: number;
     name: string;
     location?: string;
-    expectedguests: number;
-    date: string;
+    expectedGuests: number;
+    dateHeld: string;
     time: string;
     duration: number;
     image?: string | StaticImageData;
-    type?: string;
+    eventType?: string;
     suitableEvents?: string[];
     preference?: number;
+    vendor?: {
+        id: number;
+        firstName: string;
+        lastName: string;
+    };
 }
 
 export interface VenueCardProps {
@@ -31,11 +38,12 @@ export default function VenueCard(props: VenueCardProps) {
   const [hireCapacity, setHireCapacity] = useState(1);
   const [hireDate, setHireDate] = useState("");
   const [selectedRank, setSelectedRank] = useState(1);
+  const { currentUser } = useAuth();
 
   const preferredRank = preferredVenues?.find((v) => v.name == venue.name)?.preference;
   const isPreferred = preferredRank != undefined;
 
-  const handleApplySubmit = () => {
+  const handleApplySubmit = async () => {
     //Validation for empty fields
     if (!hireDate || !hireRequirements || !hireCapacity) {
       const message = 'Please fill in all fields';
@@ -45,6 +53,34 @@ export default function VenueCard(props: VenueCardProps) {
     } else {
       const message = `Venue application submitted`;
       alert(message);
+    }
+
+    try {
+        const res = await fetch("http://localhost:3001/api/bookings", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                hirerId: currentUser?.id,
+                venueId: venue.id,
+                eventName: hireRequirements,
+                date: hireDate,
+                time: venue.time,
+                duration: venue.duration,
+                capacity: hireCapacity
+            })
+        });
+
+        if (!res.ok) {
+            const data = await res.json();
+            alert(data.error || "Booking failed");
+            return;
+        }
+
+        const message = "Venue application submitted successfully!";
+        alert(message);
+    } catch (err) {
+        const message = "Failed to connect to server";
+        alert(message);
     }
   };
 
@@ -78,11 +114,11 @@ export default function VenueCard(props: VenueCardProps) {
             image={venue.image}
             body={
               <>
-                <Text>Expected Guests: {venue.expectedguests}</Text>
-                <Text>Date: {venue.date}</Text>
+                <Text>Expected Guests: {venue.expectedGuests}</Text>
+                <Text>Date: {venue.dateHeld}</Text>
                 <Text>Time: {venue.time}</Text>
                 <Text>Duration: {venue.duration} hours</Text>
-                {venue.type && <Text>Type: {venue.type}</Text>}
+                {venue.eventType && <Text>Event Type: {venue.eventType}</Text>}
                 {venue.suitableEvents && venue.suitableEvents.length > 0 && (
                   <Text>Suitable Events: {venue.suitableEvents.join(", ")}</Text>
                 )}
