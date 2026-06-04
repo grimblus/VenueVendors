@@ -26,24 +26,33 @@ export default function HirerPage() {
     const { currentUser } = useAuth();
 
     useEffect(() => {
-        //venues
+        // fetch venues
         fetch("http://localhost:3001/api/venues")
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to fetch venues");
+                return res.json();
+            })
             .then(data => setVenues(data))
             .catch(console.error);
 
         if (currentUser) {
-            //pref venues
+            // fetch preferred venues
             fetch(`http://localhost:3001/api/preferred-venues/${currentUser.id}`)
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to fetch preferred venues");
+                    return res.json();
+                })
                 .then(data => setPreferredVenues(data))
-                .catch(console.error);
+                .catch(console.error); // silently fails until route exists
 
-            //venue rep
+            // fetch reputation
             fetch(`http://localhost:3001/api/reputation/${currentUser.id}`)
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to fetch reputation");
+                    return res.json();
+                })
                 .then(data => setVenueRep(data))
-                .catch(console.error);
+                .catch(console.error); // silently fails until route exists
         }
     }, [currentUser]);
     
