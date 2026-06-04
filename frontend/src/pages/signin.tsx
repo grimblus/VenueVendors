@@ -9,17 +9,7 @@ import { useState, EventHandler, useEffect } from "react"
 import FooterContainer from "@/components/footer";
 import HeaderContainer from "@/components/header"
 import { useRouter } from "next/router";
-
- export interface User {
-  email: string;
-  password: string;
-  name?: string;
-  phone?: string;
-}
-
-const initialUsers: User[] = [
-  {email: "rhys@test.com", password: "Rhys-admin1", name: "", phone: ""}, //intialising stored users for test purposes
-];
+import { useAuth } from "@/context/AuthContext";
 
 // validates email format
 const isValidEmail = (email: string): boolean => {
@@ -39,37 +29,19 @@ const isStrongPassword = (password: string): boolean => {
 export default function Signin(){
     const router = useRouter();
     const [password1, setPassword1] = useState("");
-        
-    const [users, setUsers] = useState<User[]>([]);
-    const [selectedUser, setSelectedUser] = useState<User>({
-        email: "",
-        password: "",
-    });
+    const [email, setEmail] = useState("");
+    const { setCurrentUser } = useAuth();
 
-    useEffect(() => {
-    // Load users from localStorage
-    const storedUsers = localStorage.getItem("users");
-    if (storedUsers) {
-      setUsers(JSON.parse(storedUsers));
-    } else {
-      // Initialize with default data if nothing in localStorage
-      setUsers(initialUsers);
-      localStorage.setItem("users", JSON.stringify(initialUsers));
-    }
-  }, []);
-
-    
-
-    const handleSubmit = () =>{
+    const handleSubmit = async () => {
     //Validation checks occur here
-      if(!selectedUser.email || !password1){
+      if(!email || !password1){
         const message = 'Please fill in all fields'
         alert(message);
         return
       }
 
       // validating email and password here
-      if (!isValidEmail(selectedUser.email)) {
+      if (!isValidEmail(email)) {
       alert("Please enter a valid email address (e.g. name@example.com)");
       return;
     }
@@ -80,20 +52,35 @@ export default function Signin(){
       );
       return;
     }
-      // checking if entered credentials exist within local storage
-      const existingUser = users.find(
-        (user) => user.email === selectedUser.email
-        && user.password == password1);
+    try {
+      const response = await fetch("http://localhost:3001/api/users/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password1 }),
+      });
 
-      if(existingUser){
-        localStorage.setItem("currentUser", existingUser.email);
-        alert("Login successful!")
-        router.push("/vendors")
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Invalid email or password");
+        return;
       }
-      else{
-        alert("Username and/ or password is incorrect. Please try again")
-        setSelectedUser({ email: "", password: "" });
-        setPassword1("");
+
+      // save user to AuthContext and localStorage
+      setCurrentUser(data.user);
+      localStorage.setItem("currentUser", JSON.stringify(data.user));
+
+      alert("Login successful!");
+
+      // page based on role
+      if (data.user.role === "vendor") {
+        router.push("/vendors");
+      } else {
+        router.push("/hirers");
+      }
+
+      } catch (err) {
+        alert("Failed to connect to server. Please try again.");
       }
       
     };
@@ -110,8 +97,7 @@ export default function Signin(){
               <Field.Root>
                 <Field.Label>Email Address</Field.Label>
                 <Field.RequiredIndicator />
-                <Input name="email" value={selectedUser.email || ""} onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })
-                    }/>
+                <Input name="email" value={email || ""} onChange={(e) => setEmail(e.target.value)}/>
               </Field.Root>
 
               <Field.Root>
