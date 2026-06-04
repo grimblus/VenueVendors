@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 const Navigation = () => {
     const router = useRouter();
     const [currentUser, setCurrentUser] = useState<any>(null);
+    // apparently should do useAuth since it using local storage, but I left as is for now, uncomment if needed
+    // const { currentUser, logout } = useAuth();
 
     useEffect(() => {
         const stored = localStorage.getItem("currentUser");
@@ -19,6 +21,11 @@ const Navigation = () => {
         setCurrentUser(null);
         router.push("/signin");
     };
+
+    // const handleLogout = () => {
+    //     logout();
+    //     router.push("/signin");
+    // }
 
     return (
         <HStack gap={4}>

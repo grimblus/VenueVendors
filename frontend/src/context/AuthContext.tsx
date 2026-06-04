@@ -20,6 +20,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [currentUser, setCurrentUser] = useState<User | null>(() => {
+        // should check if we're client-side or server-side before accessing localStorage (I think)
+        if (typeof window === "undefined") return null;
         const stored = localStorage.getItem("currentUser");
         return stored ? JSON.parse(stored) : null;
     });
