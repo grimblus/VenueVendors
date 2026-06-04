@@ -11,11 +11,11 @@ dotenv.config();
 
 export const AppDataSource = new DataSource({
   type: "mssql",
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: "dipto-database.cn2ems8y2mfe.ap-southeast-2.rds.amazonaws.com",
+  port: 1433,
+  username: "s4095942",
+  password: "DigBuh2000!@#$",
+  database: "s4095942",
   entities: [User, Venue, Booking, Reputation, PreferredVenue],
   synchronize: true,
   options: {
