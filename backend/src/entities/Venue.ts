@@ -1,7 +1,7 @@
-// backend/src/entities/Booking.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToMany } from "typeorm";
 import { User } from "./User";
 import { Booking } from "./Booking";
+import { Reputation } from "./Reputation";
 
 @Entity()
 export class Venue {
@@ -13,6 +13,9 @@ export class Venue {
 
   @OneToMany(() => Booking, (booking) => booking.venue)
   bookings: Booking[];
+
+  @OneToMany(() => Reputation, (reputation) => reputation.venue)
+  reputations: Reputation[];
 
   @Column()
   name: string;

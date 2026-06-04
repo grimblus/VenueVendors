@@ -10,7 +10,7 @@ export class Booking {
   @ManyToOne(() => User)
   hirer: User;
 
-  @ManyToOne(() => Venue)
+  @ManyToOne(() => Venue, (venue) => venue.bookings)
   venue: Venue;
 
   @Column()

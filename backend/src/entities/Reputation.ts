@@ -10,7 +10,7 @@ export class Reputation {
   @ManyToOne(() => User)
   hirer: User;
 
-  @ManyToOne(() => Venue)
+  @ManyToOne(() => Venue, (venue) => venue.reputations)
   venue: Venue;
 
   @Column()

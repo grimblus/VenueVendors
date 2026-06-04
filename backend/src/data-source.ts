@@ -1,5 +1,10 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
+import { User } from "./entities/User";
+import { Venue } from "./entities/Venue";
+import { Booking } from "./entities/Booking";
+import { Reputation } from "./entities/Reputation";
+import { PreferredVenue } from "./entities/PreferredVenue";
 
 export const AppDataSource = new DataSource({
   type: "mssql",
@@ -9,7 +14,7 @@ export const AppDataSource = new DataSource({
   password: "AL53?)~]",
   database: "s4095942",
 
-  entities: ["src/entities/*.ts"],
+  entities: [User, Venue, Booking, Reputation, PreferredVenue],
   synchronize: true,
   options: {
     encrypt: true,
