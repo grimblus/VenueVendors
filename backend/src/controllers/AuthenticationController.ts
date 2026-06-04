@@ -15,7 +15,7 @@ const isStrongPassword = (password: string): boolean => {
 };
 
 export const signUp = async (req: Request, res: Response) => {
-    const { email, password, firstName, lastName, phone } = req.body;
+    const { email, password, firstName, lastName, phone, role } = req.body;
 
     if (!email || !password || !firstName || !lastName) {
         return res.status(400).json({ message: "Email, password, first name and last name are required" });
@@ -27,12 +27,16 @@ export const signUp = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Password must be at least 6 characters and contain uppercase, lowercase, and special character" });
     }
 
+    if (role && !["hirer", "vendor"].includes(role)) {
+        return res.status(400).json({ message: "Role must be either hirer or vendor" });
+    }
+
     const existingUser = await userRepository.findOne({ where: { email } });
     if (existingUser) {
         return res.status(400).json({ message: "Email already registered" });
     }
 
-    const user = userRepository.create({ email, password, firstName, lastName, phone });
+    const user = userRepository.create({ email, password, firstName, lastName, phone, role: role || "hirer" });
     await userRepository.save(user);
 
     return res.status(201).json({ message: "User registered successfully" });

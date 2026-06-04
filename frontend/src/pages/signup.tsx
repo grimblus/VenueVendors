@@ -23,6 +23,7 @@ export default function Signup() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [role, setRole] = useState("hirer");
 
     const handleSubmit = async () => {
         setError("");
@@ -50,7 +51,7 @@ export default function Signup() {
             const response = await fetch("http://localhost:3001/api/users/signup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password, firstName, lastName }),
+                body: JSON.stringify({ email, password, firstName, lastName, role }),
             });
 
             const data = await response.json();
@@ -95,6 +96,26 @@ export default function Signup() {
                                 value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
                             />
+                        </Field.Root>
+
+                        <Field.Root>
+                            <Field.Label>Role</Field.Label>
+                            <select
+                                name="role"
+                                value={role}
+                                onChange={(e) => setRole(e.target.value)}
+                                style={{
+                                    width: "100%",
+                                    padding: "8px",
+                                    borderRadius: "4px",
+                                    border: "1px solid #ccc",
+                                    fontFamily: "Arial",
+                                    fontSize: "14px",
+                                }}
+                            >
+                                <option value="hirer">Hirer</option>
+                                <option value="vendor">Vendor</option>
+                            </select>
                         </Field.Root>
 
                         <Field.Root>
