@@ -6,7 +6,7 @@ const router = Router();
 
 router.post("/signup", signUp);
 router.post("/signin", signIn);
-router.get("/profile/:email", getProfile);
-router.put("/profile/:email", updateProfile);
+router.get("/profile/:id", getProfile);
+router.put("/profile/:id", updateProfile);
 
 export default router;

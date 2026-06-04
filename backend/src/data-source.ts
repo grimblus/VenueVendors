@@ -1,19 +1,21 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
+import dotenv from "dotenv";
 import { User } from "./entities/User";
 import { Venue } from "./entities/Venue";
 import { Booking } from "./entities/Booking";
 import { Reputation } from "./entities/Reputation";
 import { PreferredVenue } from "./entities/PreferredVenue";
 
+dotenv.config();
+
 export const AppDataSource = new DataSource({
   type: "mssql",
-  host: "dipto-database.cn2ems8y2mfe.ap-southeast-2.rds.amazonaws.com",
-  port: 1433,
-  username: "s4095942",
-  password: "DigBuh2000!@#$",
-  database: "s4095942",
-
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   entities: [User, Venue, Booking, Reputation, PreferredVenue],
   synchronize: true,
   options: {
