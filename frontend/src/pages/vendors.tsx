@@ -8,103 +8,38 @@ import { Venue } from "@/components/venue-card";
 import hallImage from "../../public/melbhall.png";
 import { HStack, Button } from "@chakra-ui/react"
 import { TiStar } from "react-icons/ti";
-
-
-//initialising dummy data for venues
-const initialVenues: Venue[] = [
-  {
-    name: "Melbourne Hall",
-    expectedguests: 200,
-    date: "17/04/2026",
-    time: "20:00",
-    duration: 2,
-    image: hallImage
-  }
-];
-
-//initialising dummy data for applications
-const initialApplicants: Applicant[] = [
-  {
-    id: "1",
-    email: "sarah.jones@example.com",
-    name: "Sarah Jones",
-    venueName: "Melbourne Hall",
-    eventType: "Corporate Event",
-    eventDate: "15/06/2026",
-    guestCount: 150,
-    venueRequirements: "Large conference room with AV equipment, catering facilities, parking for 100 vehicles",
-    previousHires: "Avondale Acoustic's Centre, Hamer Hall",
-    documentName: "Public Liability Insurance - Valid until Dec 2026",
-    selected: false,
-    approved: false,
-    rejected: false,
-    comments: [],
-    totalStars: 0,
-    ratingCount: 0,
-  },
-  {
-    id: "2",
-    email: "michael.tan@example.com",
-    name: "Michael Tan",
-    venueName: "Melbourne Hall",
-    eventType: "Wedding Reception",
-    eventDate: "22/08/2026",
-    guestCount: 120,
-    venueRequirements: "Elegant ballroom with outdoor garden area, full catering kitchen, accommodation for bridal party",
-    previousHires: "The Comic's Lounge, Crown Expo Building",
-    documentName: "Event Permit & Insurance Certificate - Valid",
-    selected: false,
-    approved: false,
-    rejected: false,
-    comments: [],
-    totalStars: 0,
-    ratingCount: 0,
-  },
-  {
-    id: "3",
-    email: "emma.wilson@example.com",
-    name: "Emma Wilson",
-    venueName: "Melbourne Hall",
-    eventType: "Birthday Party",
-    eventDate: "10/05/2026",
-    guestCount: 80,
-    venueRequirements: "Indoor/outdoor space with entertainment area, sound system, bar facilities",
-    previousHires: "Sydney Lighthouse, The Ritz",
-    documentName: "Public Liability Insurance & ID Verification",
-    selected: false,
-    approved: false,
-    rejected: false,
-    comments: [],
-    totalStars: 0,
-    ratingCount: 0,
-  },
-];
+import { useAuth } from "@/context/AuthContext";
 
 export default function VendorsPage() {
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [selectedVenue, setSelectedVenue] = useState<string | null>(null);
+  const { currentUser } = useAuth();
 
-  //getting applicants from localStorage
   useEffect(() => { 
-    const storedApplicants = localStorage.getItem("applicants");
-    if (storedApplicants) {
-      setApplicants(JSON.parse(storedApplicants));
-    } else {
-      setApplicants(initialApplicants);
-      localStorage.setItem("applicants", JSON.stringify(initialApplicants));
+    //getting venues
+    if (currentUser) {
+      fetch(`http://localhost:3001/api/venues/vendor/${currentUser.id}`)
+        .then(res => res.json())
+        .then(data => setVenues(data))
+        .catch(console.error);
     }
+  }, [currentUser]);
 
-    //getting venues from localStorage
-    const storedVenues = localStorage.getItem("venues");
-    if (storedVenues) {
-      setVenues(JSON.parse(storedVenues));
+  const handleToggleVenue = (venueName: string, venueId: number) => {
+    //getting bookings
+    if (selectedVenue === venueName) {
+      setSelectedVenue(null); // close if already open
+      setApplicants([]); // clear applicants when closing venue
     } else {
-      setVenues(initialVenues);
-      localStorage.setItem("venues", JSON.stringify(initialVenues));
+      setSelectedVenue(venueName);
+      //get bookings
+      fetch(`http://localhost:3001/api/bookings/venue/${venueId}`)
+        .then(res => res.json())
+        .then(data => setApplicants(data))
+        .catch(console.error);
     }
-  }, []);
-
+  };
 
   const sortByHighestRating = () => {
       const sorted = [...applicants].sort((a, b) => {
@@ -114,26 +49,18 @@ export default function VendorsPage() {
       });
 
       setApplicants(sorted);
-      localStorage.setItem("applicants", JSON.stringify(sorted));
       alert("Applicants have been sorted!")
     };
 
   //updating application
-  const handleUpdate = (updatedApplicant: Applicant) => {
-    const updatedApplicants = applicants.map((app) =>
-      app.id === updatedApplicant.id ? updatedApplicant : app
-    );
-    setApplicants(updatedApplicants);
-    localStorage.setItem("applicants", JSON.stringify(updatedApplicants));
-  };
+  const handleUpdate = async (updatedApplicant: Applicant) => {
+    await fetch(`http://localhost:3001/api/bookings/${updatedApplicant.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedApplicant)
+    });
 
-  //boolean for toggling if venue is selected or not
-  const handleToggleVenue = (venueName: string) => {
-    if (selectedVenue === venueName) {
-      setSelectedVenue(null); // close if already open
-    } else {
-      setSelectedVenue(venueName); // open this venue
-    }
+    setApplicants((prev) => prev.map((app) => app.id === updatedApplicant.id ? updatedApplicant : app));
   };
 
   // filter applicants by selected venue
@@ -156,7 +83,7 @@ export default function VendorsPage() {
                 <VendorVenueCard
                   venue={venue}
                   isSelected={selectedVenue === venue.name}
-                  onToggle={() => handleToggleVenue(venue.name)}
+                  onToggle={() => handleToggleVenue(venue.name, venue.id)}
                 />
                 
                 {/* show applicants when venue is selected */}

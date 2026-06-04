@@ -39,6 +39,7 @@ export const createBooking = async (req: Request, res: Response) => {
     return res.status(201).json({ message: "Booking created successfully", booking });
 };
 
+// for hirer
 export const getBookingsByHirer = async (req: Request, res: Response) => {
     const hirerId = Number(req.params.hirerId);
 
@@ -50,6 +51,24 @@ export const getBookingsByHirer = async (req: Request, res: Response) => {
         },
         relations: { 
             venue: true 
+        }
+    });
+
+    return res.json(bookings);
+};
+
+// for vendor
+export const getBookingsByVenue = async (req: Request, res: Response) => {
+    const venueId = Number(req.params.venueId);
+
+    const bookings = await bookingRepo.find({
+        where: { 
+            venue: { 
+                id: venueId 
+            } 
+        },
+        relations: { 
+            hirer: true 
         }
     });
 
