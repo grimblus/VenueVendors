@@ -5,7 +5,6 @@ import HeaderContainer from "@/components/header";
 import ApplicantCard, { type Applicant } from "@/components/applicant-card";
 import VendorVenueCard from "@/components/minimal-venue-card";
 import { Venue } from "@/components/venue-card";
-import hallImage from "../../public/melbhall.png";
 import { HStack, Button } from "@chakra-ui/react"
 import { TiStar } from "react-icons/ti";
 import { useAuth } from "@/context/AuthContext";
@@ -17,7 +16,6 @@ export default function VendorsPage() {
   const { currentUser } = useAuth();
 
   useEffect(() => { 
-    //getting venues
     if (currentUser) {
       fetch(`http://localhost:3001/api/venues/vendor/${currentUser.id}`)
         .then(res => res.json())
@@ -27,32 +25,49 @@ export default function VendorsPage() {
   }, [currentUser]);
 
   const handleToggleVenue = (venueName: string, venueId: number) => {
-    //getting bookings
     if (selectedVenue === venueName) {
-      setSelectedVenue(null); // close if already open
-      setApplicants([]); // clear applicants when closing venue
+      setSelectedVenue(null);
+      setApplicants([]);
     } else {
       setSelectedVenue(venueName);
-      //get bookings
       fetch(`http://localhost:3001/api/bookings/venue/${venueId}`)
         .then(res => res.json())
-        .then(data => setApplicants(data))
+        .then(data => {
+          // mapping booking data to applicant interface
+          const mapped = data.map((booking: any) => ({
+            id: booking.id,
+            name: `${booking.hirer?.firstName} ${booking.hirer?.lastName}`,
+            email: booking.hirer?.email || "",
+            venueName: venueName,
+            eventType: booking.eventName,
+            eventDate: booking.date,
+            guestCount: Number(booking.expectedGuests),
+            venueRequirements: booking.eventName,
+            previousHires: "",
+            documentName: "",
+            selected: booking.bookingStatus === "accepted",
+            approved: booking.bookingStatus === "approved",
+            rejected: booking.bookingStatus === "rejected",
+            comments: booking.comments || [],
+            totalStars: booking.totalStars || 0,
+            ratingCount: booking.ratingCount || 0,
+          }));
+          setApplicants(mapped);
+        })
         .catch(console.error);
     }
   };
 
   const sortByHighestRating = () => {
-      const sorted = [...applicants].sort((a, b) => {
-        const avgA = a.ratingCount ? a.totalStars / a.ratingCount : 0;
-        const avgB = b.ratingCount ? b.totalStars / b.ratingCount : 0;
-        return avgB - avgA;
-      });
+    const sorted = [...applicants].sort((a, b) => {
+      const avgA = a.ratingCount ? a.totalStars / a.ratingCount : 0;
+      const avgB = b.ratingCount ? b.totalStars / b.ratingCount : 0;
+      return avgB - avgA;
+    });
+    setApplicants(sorted);
+    alert("Applicants have been sorted!");
+  };
 
-      setApplicants(sorted);
-      alert("Applicants have been sorted!")
-    };
-
-  //updating application
   const handleUpdate = async (updatedApplicant: Applicant) => {
     await fetch(`http://localhost:3001/api/bookings/${updatedApplicant.id}`, {
       method: "PUT",
@@ -60,13 +75,10 @@ export default function VendorsPage() {
       body: JSON.stringify(updatedApplicant)
     });
 
-    setApplicants((prev) => prev.map((app) => app.id === updatedApplicant.id ? updatedApplicant : app));
+    setApplicants((prev) => prev.map((app) => 
+      app.id === updatedApplicant.id ? updatedApplicant : app
+    ));
   };
-
-  // filter applicants by selected venue
-  const filteredApplicants = selectedVenue
-    ? applicants.filter((app) => app.venueName === selectedVenue)
-    : [];
 
   return (
     <div className="vendorsPage min-h-screen flex flex-col">
@@ -86,15 +98,14 @@ export default function VendorsPage() {
                   onToggle={() => handleToggleVenue(venue.name, venue.id)}
                 />
                 
-                {/* show applicants when venue is selected */}
                 {selectedVenue === venue.name && (
                   <Box mt={4} ml={8}>
                     <Button size="sm" mb={3} onClick={sortByHighestRating}>
                       Sort by Reputation Rating (<TiStar />)
                     </Button>
-                    {filteredApplicants.length > 0 ? (
+                    {applicants.length > 0 ? (
                       <Stack gap={4}>
-                        {filteredApplicants.map((applicant) => (
+                        {applicants.map((applicant) => (
                           <ApplicantCard
                             key={applicant.id}
                             applicant={applicant}

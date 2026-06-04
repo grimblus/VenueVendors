@@ -40,35 +40,58 @@ export default function VenueCard(props: VenueCardProps) {
   const [hireDate, setHireDate] = useState("");
   const [selectedRank, setSelectedRank] = useState(1);
   const { currentUser } = useAuth();
+  const [hireDuration, setHireDuration] = useState(1);
+  const [hireTime, setHireTime] = useState("");
 
   const preferredRank = preferredVenues?.find((v) => v.name == venue.name)?.preference;
   const isPreferred = preferredRank != undefined;
 
   const handleApplySubmit = async () => {
-    //Validation for empty fields
+    console.log("hireDate:", hireDate);
+    console.log("hireRequirements:", hireRequirements);
+    console.log("hireCapacity:", hireCapacity);
+
+    // Validation check
     if (!hireDate || !hireRequirements || !hireCapacity) {
-      const message = 'Please fill in all fields';
-      alert(message);
-      return;
-    //Valid
-    } else {
-      const message = `Venue application submitted`;
-      alert(message);
+        alert('Please fill in all fields');
+        return;
     }
+    if (!hireDate) {
+    alert("Please enter a hire date");
+    return;
+    }
+    if (!hireRequirements.trim()) {
+        alert("Please enter a reason for hiring");
+        return;
+    }
+    if (!hireCapacity || hireCapacity <= 0 || isNaN(hireCapacity)) {
+        alert("Please enter a valid capacity");
+        return;
+    }
+    if (!hireTime) {
+        alert("Please enter a hire time");
+        return;
+    }
+    if (!hireDuration || hireDuration <= 0 || isNaN(hireDuration)) {
+        alert("Please enter a valid duration");
+        return;
+    }
+
+
 
     try {
         const res = await fetch("http://localhost:3001/api/bookings", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                hirerId: currentUser?.id,
-                venueId: venue.id,
-                eventName: hireRequirements,
-                date: hireDate,
-                time: venue.time,
-                duration: venue.duration,
-                capacity: hireCapacity
-            })
+              hirerId: currentUser?.id,
+              venueId: venue.id,
+              eventName: hireRequirements,
+              date: hireDate,
+              time: hireTime,
+              duration: hireDuration,
+              capacity: hireCapacity,
+          })
         });
 
         if (!res.ok) {
@@ -77,13 +100,12 @@ export default function VenueCard(props: VenueCardProps) {
             return;
         }
 
-        const message = "Venue application submitted successfully!";
-        alert(message);
+        // Only alert success AFTER API confirms
+        alert("Venue application submitted successfully!");
     } catch (err) {
-        const message = "Failed to connect to server";
-        alert(message);
+        alert("Failed to connect to server");
     }
-  };
+};
 
   const handlePreferenceSubmit = () => {
     onPreferenceChange?.(selectedRank);
@@ -115,10 +137,6 @@ export default function VenueCard(props: VenueCardProps) {
             image={venue.imageUrl || venue.image}
             body={
               <>
-                <Text>Expected Guests: {venue.expectedGuests}</Text>
-                <Text>Date: {venue.dateHeld}</Text>
-                <Text>Time: {venue.time}</Text>
-                <Text>Duration: {venue.duration} hours</Text>
                 {venue.eventType && <Text>Event Type: {venue.eventType}</Text>}
                 {venue.suitableEvents && venue.suitableEvents.length > 0 && (
                   <Text>Suitable Events: {venue.suitableEvents.join(", ")}</Text>
@@ -146,6 +164,26 @@ export default function VenueCard(props: VenueCardProps) {
                         <Field.Label>Hire Date</Field.Label>
                         <Input name="date" type="date" value={hireDate} onChange={(e) => setHireDate(e.target.value)}/>
                         </Field.Root>
+                        <Field.Root>
+                          <Field.Label>Hire Time</Field.Label>
+                          <Input 
+                              name="time" 
+                              type="time" 
+                              value={hireTime} 
+                              onChange={(e) => setHireTime(e.target.value)}
+                          />
+                      </Field.Root>
+
+                      <Field.Root>
+                          <Field.Label>Duration (hours)</Field.Label>
+                          <Input 
+                              name="duration" 
+                              type="number" 
+                              placeholder="Enter duration in hours" 
+                              value={hireDuration} 
+                              onChange={(e) => setHireDuration(Number(e.target.value))}
+                          />
+                      </Field.Root>
                       </HStack>
                     </Fieldset.Content>
                     </Fieldset.Root>

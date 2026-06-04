@@ -29,6 +29,7 @@ export const createBooking = async (req: Request, res: Response) => {
         hirer,
         venue,
         eventName,
+        expectedGuests: String(capacity),
         date,
         time,
         duration,
@@ -73,4 +74,24 @@ export const getBookingsByVenue = async (req: Request, res: Response) => {
     });
 
     return res.json(bookings);
+};
+
+export const updateBooking = async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const { selected, approved, rejected } = req.body;
+
+    const booking = await bookingRepo.findOne({ where: { id } });
+    if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+    }
+
+    // translate frontend booleans to bookingStatus string
+    if (rejected) {
+        booking.bookingStatus = "rejected";
+    } else if (approved) {
+        booking.bookingStatus = "approved";
+    }
+
+    await bookingRepo.save(booking);
+    return res.status(200).json({ message: "Booking updated successfully", booking });
 };

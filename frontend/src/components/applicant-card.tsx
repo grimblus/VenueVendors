@@ -52,7 +52,7 @@ export default function ApplicantCard(props: ApplicantCardProps) {
     }
     const updatedApplicant = {
       ...applicant,
-      comments: [...applicant.comments, commentText]
+      comments: [...(applicant.comments || []), commentText]
     };
     onUpdate(updatedApplicant);
     setCommentText("");
@@ -158,7 +158,7 @@ export default function ApplicantCard(props: ApplicantCardProps) {
           </Box>
 
           {/* applicant comments displayed here */}
-          {applicant.comments.length > 0 && (
+          {applicant.comments && applicant.comments.length > 0 && (
             <Box>
               <Text fontWeight="semibold">Comments:</Text>
               {applicant.comments.map((comment, idx) => (
