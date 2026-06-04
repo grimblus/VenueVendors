@@ -41,4 +41,7 @@ export class Venue {
 
   @Column()
   location: string;
+
+  @Column({ nullable: true})
+  imageUrl : string;
 }
