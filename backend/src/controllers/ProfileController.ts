@@ -7,7 +7,11 @@ const userRepository = AppDataSource.getRepository(User);
 export const getProfile = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
-    const user = await userRepository.findOne({ where: { id } });
+    const user = await userRepository.findOne({ 
+        where: { 
+            id 
+        } 
+    });
     if (!user) {
         return res.status(404).json({ message: "User not found" });
     }
@@ -27,7 +31,24 @@ export const updateProfile = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     const { firstName, lastName, phone } = req.body;
 
-    const user = await userRepository.findOne({ where: { id } });
+    if (!firstName || !lastName) {
+        return res.status(400).json({ message: "First and last name are required" });
+    }
+
+    if (!/^[a-zA-Z]{2,40}$/.test(firstName) || !/^[a-zA-Z]{2,40}$/.test(lastName)) {
+        return res.status(400).json({ message: "Names must be letters only" });
+    }
+
+    if (phone && !/^\d+$/.test(phone)) {
+        return res.status(400).json({ message: "Phone must contain only digits" });
+    }
+
+    const user = await userRepository.findOne({ 
+        where: { 
+            id 
+        } 
+    });
+    
     if (!user) {
         return res.status(404).json({ message: "User not found" });
     }

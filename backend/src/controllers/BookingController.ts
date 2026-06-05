@@ -15,6 +15,14 @@ export const createBooking = async (req: Request, res: Response) => {
         return res.status(400).json({ error: "Please fill in all fields" });
     }
 
+    if (isNaN(Number(duration)) || Number(duration) <= 0) {
+        return res.status(400).json({ error: "Duration must be a positive number" });
+    }
+
+    if (isNaN(Number(capacity)) || Number(capacity) <= 0) {
+        return res.status(400).json({ error: "Capacity must be a positive number" });
+    }
+
     const hirer = await userRepo.findOne({ where: { id: hirerId } });
     if (!hirer) {
         return res.status(404).json({ error: "Hirer not found" });
