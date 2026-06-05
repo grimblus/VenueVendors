@@ -27,6 +27,37 @@ export const getProfile = async (req: Request, res: Response) => {
     });
 };
 
+export const updateUserRating = async (req: Request, res: Response) => {
+    try {
+        const id = Number(req.params.id as string);
+        const { rating } = req.body;
+
+        if (!rating || rating < 1 || rating > 5) {
+            return res.status(400).json({ error: "Rating must be between 1 and 5" });
+        }
+
+        const user = await userRepository.findOne({ where: { id } });
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // add new rating to total
+        user.totalStars = user.totalStars + rating;
+        user.reviewCount = user.reviewCount + 1;
+
+        await userRepository.save(user);
+
+        return res.status(200).json({ 
+            message: "Rating updated successfully",
+            averageRating: (user.totalStars / user.reviewCount).toFixed(1),
+            reviewCount: user.reviewCount
+        });
+    } catch (error) {
+        console.error("Error updating rating:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 export const updateProfile = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     const { firstName, lastName, phone } = req.body;

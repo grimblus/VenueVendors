@@ -6,6 +6,8 @@ import { TiStar } from "react-icons/ti";
 export interface Applicant {
     //applicant personal info
     id: string;
+    hirerId?: number;
+    venueId?: number;
     email: string;
     name: string;
     //event info      
@@ -58,20 +60,38 @@ export default function ApplicantCard(props: ApplicantCardProps) {
     setCommentText("");
   };
 
-  const handleSelectWithRating = () => {
+  const handleSelectWithRating = async () => {
     if (selectedRating === 0) {
-      alert("Please select a rating (1-5 stars)");
-      return;
+        alert("Please select a rating (1-5 stars)");
+        return;
     }
+
+    // save rating to user in database
+    if (applicant.hirerId) {
+        try {
+            const res = await fetch(`http://localhost:3001/api/users/rating/${applicant.hirerId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ rating: selectedRating })
+            });
+
+            if (!res.ok) {
+                console.error("Failed to save rating");
+            }
+        } catch (err) {
+            console.error("Failed to save rating:", err);
+        }
+    }
+
     const updatedApplicant = {
-      ...applicant,
-      selected: true,
-      totalStars: applicant.totalStars + selectedRating,
-      ratingCount: applicant.ratingCount + 1
+        ...applicant,
+        selected: true,
+        totalStars: applicant.totalStars + selectedRating,
+        ratingCount: applicant.ratingCount + 1
     };
     onUpdate(updatedApplicant);
     setShowRating(false);
-  };
+};
 
   const handleUnselect = () => {
     const updatedApplicant = {

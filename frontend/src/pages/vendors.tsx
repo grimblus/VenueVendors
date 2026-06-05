@@ -36,6 +36,8 @@ export default function VendorsPage() {
           // mapping booking data to applicant interface
           const mapped = data.map((booking: any) => ({
             id: booking.id,
+            hirerId: booking.hirer?.id,
+            venueId: venueId,
             name: `${booking.hirer?.firstName} ${booking.hirer?.lastName}`,
             email: booking.hirer?.email || "",
             venueName: venueName,
@@ -49,8 +51,8 @@ export default function VendorsPage() {
             approved: booking.bookingStatus === "approved",
             rejected: booking.bookingStatus === "rejected",
             comments: booking.comments || [],
-            totalStars: booking.totalStars || 0,
-            ratingCount: booking.ratingCount || 0,
+            totalStars: booking.hirer?.totalStars || 0, 
+            ratingCount: booking.hirer?.reviewCount || 0,
           }));
           setApplicants(mapped);
         })

@@ -23,6 +23,12 @@ export class User {
   @Column()
   role: string;
 
+  @Column({ default: 0 })
+  totalStars: number; 
+
+  @Column({ default: 0 })
+  reviewCount: number;
+
   @CreateDateColumn()
   dateCreated: Date;
 }
