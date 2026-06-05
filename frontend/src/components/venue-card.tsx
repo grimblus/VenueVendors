@@ -141,6 +141,7 @@ export default function VenueCard(props: VenueCardProps) {
                 {venue.suitableEvents && venue.suitableEvents.length > 0 && (
                   <Text>Suitable Events: {venue.suitableEvents.join(", ")}</Text>
                 )}
+                {venue.location && <Text>Location: {venue.location}</Text>}
                 <Card.Root w="full" mx="auto" mt={6}>
                   <Card.Body >
                     <Fieldset.Root size="lg" w="full">
