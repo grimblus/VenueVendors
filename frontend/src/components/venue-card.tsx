@@ -116,15 +116,12 @@ export default function VenueCard(props: VenueCardProps) {
       <Card.Body>
         <HStack w="100%" justifyContent="space-between">
           <HStack>
-            {isPreferred ? ( <Text>{preferredRank}</Text> ) : (
-              <>
+            <Text>{preferredRank}</Text>
                 <Dropdown
                   items={venues.map((_, i) => ({ label: String(i + 1), value: String(i + 1) }))}
                   onSelect={(item) => setSelectedRank(Number(item.value))}
                 />
                 <Button size="sm" onClick={handlePreferenceSubmit}>Apply Preference</Button>
-              </>
-            )}
           </HStack>
 
           <AbsoluteCenter>
