@@ -2,36 +2,47 @@ import { Link, Button, HStack, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 const Navigation = () => {
     const router = useRouter();
-    const [currentUser, setCurrentUser] = useState<any>(null);
-    // apparently should do useAuth since it using local storage, but I left as is for now, uncomment if needed
-    // const { currentUser, logout } = useAuth();
+    // const [currentUser, setCurrentUser] = useState<any>(null);
+    const { currentUser, logout } = useAuth();
 
-    useEffect(() => {
-        const stored = localStorage.getItem("currentUser");
-        if (stored) {
-            setCurrentUser(JSON.parse(stored));
-        }
-    }, []);
-
-    const handleLogout = () => {
-        localStorage.removeItem("currentUser");
-        setCurrentUser(null);
-        router.push("/signin");
-    };
+    // useEffect(() => {
+    //     const stored = localStorage.getItem("currentUser");
+    //     if (stored) {
+    //         setCurrentUser(JSON.parse(stored));
+    //     }
+    // }, []);
 
     // const handleLogout = () => {
-    //     logout();
+    //     localStorage.removeItem("currentUser");
+    //     setCurrentUser(null);
     //     router.push("/signin");
-    // }
+    // };
+
+    const handleLogout = () => {
+        logout();
+        router.push("/signin");
+    }
 
     return (
         <HStack gap={4}>
             <Link as={NextLink} href="/">Home</Link>
-            <Link as={NextLink} href="/hirers">Hirer</Link>
-            <Link as={NextLink} href="/vendors">Vendor</Link>
+
+            {/* for both hirer and vendor */}
+            {currentUser && (
+                <Link as={NextLink} href="/hirers">Hirer</Link>
+            )}
+
+            {/* for vendor only */}
+            {currentUser?.role === "vendor" && (
+                <Link as={NextLink} href="/vendors">Vendor</Link>
+            )}
+
+            {/* <Link as={NextLink} href="/hirers">Hirer</Link>
+            <Link as={NextLink} href="/vendors">Vendor</Link> */}
 
             {currentUser ? (
                 <>
