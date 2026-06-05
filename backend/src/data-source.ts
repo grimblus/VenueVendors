@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import { User } from "./entities/User";
 import { Venue } from "./entities/Venue";
 import { Booking } from "./entities/Booking";
-import { Reputation } from "./entities/Reputation";
 import { PreferredVenue } from "./entities/PreferredVenue";
 
 dotenv.config();
@@ -16,7 +15,7 @@ export const AppDataSource = new DataSource({
   username: "s4095942",
   password: "DigBuh2000!@#$",
   database: "s4095942",
-  entities: [User, Venue, Booking, Reputation, PreferredVenue],
+  entities: [User, Venue, Booking, PreferredVenue],
   synchronize: true,
   options: {
     encrypt: true,
