@@ -26,7 +26,7 @@ const Modal = (props: ModalProps) => {
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
-          <Dialog.Content>
+          <Dialog.Content overflow="auto">
             <Dialog.Header>
               <Dialog.Title fontSize={50}>{title}</Dialog.Title>
             </Dialog.Header>
