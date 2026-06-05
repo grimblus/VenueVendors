@@ -8,6 +8,7 @@ const Navigation = () => {
     const router = useRouter();
     // const [currentUser, setCurrentUser] = useState<any>(null);
     const { currentUser, logout } = useAuth();
+    const [mounted, setMounted] = useState(false);
 
     // useEffect(() => {
     //     const stored = localStorage.getItem("currentUser");
@@ -22,9 +23,21 @@ const Navigation = () => {
     //     router.push("/signin");
     // };
 
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const handleLogout = () => {
         logout();
         router.push("/signin");
+    }
+
+    if (!mounted) {
+        return (
+            <HStack gap={4}>
+                <Link as={NextLink} href="/">Home</Link>
+            </HStack>
+        );
     }
 
     return (
