@@ -6,6 +6,7 @@ import userRoutes from "./routes/user.routes";
 import venueRoutes from "./routes/venue.routes";
 import bookingRoutes from "./routes/booking.routes";
 import preferredVenueRoutes from "./routes/preferredVenue.routes";
+import reputationRoutes from "./routes/reputation.routes";
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/venues", venueRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/preferred-venues", preferredVenueRoutes);
+app.use("/api/reputation", reputationRoutes);
 
 AppDataSource.initialize()
   .then(() => {
