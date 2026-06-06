@@ -24,6 +24,8 @@ export const getProfile = async (req: Request, res: Response) => {
         phone: user.phone,
         role: user.role,
         dateCreated: user.dateCreated,
+        totalStars: user.totalStars,
+        reviewCount: user.reviewCount,
     });
 };
 

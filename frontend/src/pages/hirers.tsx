@@ -23,6 +23,7 @@ export default function HirerPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchDomain, setSearchDomain] = useState("Name");
     const [preferredVenues, setPreferredVenues] = useState<Venue[]>([]);
+    const [userRep, setUserRep] = useState<{ totalStars: number; reviewCount: number }>({ totalStars: 0, reviewCount: 0 });
     const { currentUser } = useAuth();
 
     const venueRep = currentUser ? {
@@ -48,6 +49,19 @@ export default function HirerPage() {
                     return res.json();
                 })
                 .then(data => setPreferredVenues(data))
+                .catch(console.error);
+        }
+
+        if (currentUser) {
+            // fetch user rep
+            fetch(`http://localhost:3001/api/users/profile/${currentUser.id}`)
+                .then(res => res.json())
+                .then(data => {
+                    setUserRep({
+                        totalStars: data.totalStars || 0,
+                        reviewCount: data.reviewCount || 0
+                    });
+                })
                 .catch(console.error);
         }
     }, [currentUser]);
@@ -112,8 +126,8 @@ export default function HirerPage() {
                                 title="Your Hirer's Reputation"
                                 body={
                                     <Stack gap={4}>
-                                        {venueRep ? (
-                                            <ReputationCard reputation={venueRep} />
+                                        {userRep ? (
+                                            <ReputationCard reputation={userRep} />
                                         ) : (
                                             <Text>No reputation data yet</Text>
                                         )}
