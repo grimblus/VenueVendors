@@ -1,32 +1,32 @@
 import { Card, Text, Button, Field, Input, Stack, HStack, Box } from "@chakra-ui/react";
 import { useState } from "react";
-import { Icon } from "@chakra-ui/react"
 import { TiStar } from "react-icons/ti";
 
 export interface Applicant {
-    //applicant personal info
     id: string;
     hirerId?: number;
     venueId?: number;
     email: string;
     name: string;
-    //event info      
     venueName: string;
     eventType: string;
     eventDate: string;
     guestCount: number;
     venueRequirements: string;
-    //more applicant info
     previousHires: string;
     documentName: string;
     selected: boolean;
     approved: boolean;
     rejected: boolean;
     comments: string[];
-    //star-rating below (total star count and total amount of ratings coming from users)
     totalStars: number;
     ratingCount: number;
     complianceScore: number;
+    driversLicense?: string;
+    publicLiabilityInsurance?: string;
+    businessRegistration?: string;
+    isBusinessApplication?: boolean;
+    abnNumber?: string;
 }
 
 export interface ApplicantCardProps {
@@ -63,36 +63,36 @@ export default function ApplicantCard(props: ApplicantCardProps) {
 
   const handleSelectWithRating = async () => {
     if (selectedRating === 0) {
-        alert("Please select a rating (1-5 stars)");
-        return;
+      alert("Please select a rating (1-5 stars)");
+      return;
     }
 
     // save rating to user in database
     if (applicant.hirerId) {
-        try {
-            const res = await fetch(`http://localhost:3001/api/users/rating/${applicant.hirerId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ rating: selectedRating })
-            });
+      try {
+        const res = await fetch(`http://localhost:3001/api/users/rating/${applicant.hirerId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rating: selectedRating })
+        });
 
-            if (!res.ok) {
-                console.error("Failed to save rating");
-            }
-        } catch (err) {
-            console.error("Failed to save rating:", err);
+        if (!res.ok) {
+          console.error("Failed to save rating");
         }
+      } catch (err) {
+        console.error("Failed to save rating:", err);
+      }
     }
 
     const updatedApplicant = {
-        ...applicant,
-        selected: true,
-        totalStars: applicant.totalStars + selectedRating,
-        ratingCount: applicant.ratingCount + 1
+      ...applicant,
+      selected: true,
+      totalStars: applicant.totalStars + selectedRating,
+      ratingCount: applicant.ratingCount + 1
     };
     onUpdate(updatedApplicant);
     setShowRating(false);
-};
+  };
 
   const handleUnselect = () => {
     const updatedApplicant = {
@@ -121,16 +121,6 @@ export default function ApplicantCard(props: ApplicantCardProps) {
     alert("Booking confirmed! The applicant has been notified.");
   };
 
-  // so the date doesnt look weird
-  const formatDate = (dateString: string) => {
-      if (!dateString) return "N/A";
-      return new Date(dateString).toLocaleDateString("en-AU", {
-          day: "numeric",
-          month: "long",
-          year: "numeric"
-      });
-  };
-
   return (
     <Card.Root width="full" mb={4}>
       <Card.Body>
@@ -140,20 +130,24 @@ export default function ApplicantCard(props: ApplicantCardProps) {
               <Text textStyle="xl" fontWeight="bold">{applicant.name}</Text>
               <Text color="gray.600">{applicant.email}</Text>
               
-              <HStack color="yellow.solid" fontWeight="semibold">
+              {/* reputation rating */}
+              <HStack fontWeight="semibold">
                 <TiStar/>
-                <Text>Rating: {averageRating} {applicant.ratingCount > 0 && `(${applicant.ratingCount} reviews)`}
+                <Text>
+                  Rating: {averageRating} {applicant.ratingCount > 0 && `(${applicant.ratingCount} reviews)`}
                 </Text>
               </HStack>
+
+              {/* compliance score */}
               <HStack fontWeight="semibold">
-                  <Text>Compliance Score: </Text>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                      <TiStar
-                          key={star}
-                          color={star <= applicant.complianceScore ? "gold" : "gray"}
-                      />
-                  ))}
-                  <Text>({applicant.complianceScore}/5)</Text>
+                <Text>Compliance Score: </Text>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <TiStar
+                    key={star}
+                    color={star <= applicant.complianceScore ? "gold" : "gray"}
+                  />
+                ))}
+                <Text>({applicant.complianceScore}/5)</Text>
               </HStack>
             </Box>
             <Box>
@@ -173,12 +167,12 @@ export default function ApplicantCard(props: ApplicantCardProps) {
           <Box>
             <Text fontWeight="semibold">Event Details:</Text>
             <Text>Type: {applicant.eventType}</Text>
-            <Text>Date: {formatDate(applicant.eventDate)}</Text>
+            <Text>Date: {applicant.eventDate}</Text>
             <Text>Expected Guests: {applicant.guestCount}</Text>
             <Text>Requirements: {applicant.venueRequirements}</Text>
           </Box>
 
-          {/* hire history of hirer and documents */}
+          {/* hire history and documents */}
           <Box>
             <Button 
               size="sm"
@@ -190,10 +184,73 @@ export default function ApplicantCard(props: ApplicantCardProps) {
             </Button>
             {showDetails && (
               <Box mt={2} p={3} bg="bg.panel" borderRadius="md">
-                <Text fontWeight="semibold">Previous Hires:</Text>
-                <Text mb={2}>{applicant.previousHires}</Text>
-                <Text fontWeight="semibold">Compliance Document:</Text>
-                <Text>{applicant.documentName}</Text>
+                <Text fontWeight="semibold" mb={2}>Compliance Documents:</Text>
+
+                {/* license */}
+                {applicant.driversLicense ? (
+                  <Box mb={3}>
+                    <Text fontWeight="semibold" fontSize="sm">Driver's License:</Text>
+                    <img
+                      src={applicant.driversLicense}
+                      alt="Driver's License"
+                      style={{ maxWidth: "300px", maxHeight: "200px", objectFit: "contain", marginTop: "4px", borderRadius: "4px" }}
+                    />
+                  </Box>
+                ) : (
+                  <Text fontSize="sm" color="red.500" mb={2}>✗ No driver's license uploaded</Text>
+                )}
+
+                {/* Public Liability Insurance */}
+                {applicant.publicLiabilityInsurance ? (
+                  <Box mb={3}>
+                    <Text fontWeight="semibold" fontSize="sm">Public Liability Insurance:</Text>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      mt={1}
+                      onClick={() => {
+                        const link = document.createElement("a");
+                        link.href = applicant.publicLiabilityInsurance!;
+                        link.download = "public_liability_insurance.pdf";
+                        link.click();
+                      }}
+                    >
+                      Download PDF
+                    </Button>
+                  </Box>
+                ) : (
+                  <Text fontSize="sm" color="red.500" mb={2}>✗ No insurance document uploaded</Text>
+                )}
+
+                {/* business Documents */}
+                {applicant.isBusinessApplication && (
+                  <Box mb={3}>
+                    <Text fontWeight="semibold" fontSize="sm">Business Application</Text>
+                    <Text fontSize="sm">ABN: {applicant.abnNumber || "Not provided"}</Text>
+                    {applicant.businessRegistration ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        mt={1}
+                        onClick={() => {
+                          const link = document.createElement("a");
+                          link.href = applicant.businessRegistration!;
+                          link.download = "business_registration.pdf";
+                          link.click();
+                        }}
+                      >
+                        Download Business Registration PDF
+                      </Button>
+                    ) : (
+                      <Text fontSize="sm" color="red.500">✗ No business registration uploaded</Text>
+                    )}
+                  </Box>
+                )}
+
+                {/* no documents at all */}
+                {!applicant.driversLicense && !applicant.publicLiabilityInsurance && !applicant.isBusinessApplication && (
+                  <Text fontSize="sm" color="gray.500">No documents uploaded by this applicant</Text>
+                )}
               </Box>
             )}
           </Box>
@@ -227,7 +284,7 @@ export default function ApplicantCard(props: ApplicantCardProps) {
             </Box>
           )}
 
-          {/* rating option that shows when application is selected*/}
+          {/* rating option that shows when application is selected */}
           {showRating && (
             <Box p={3} bg="bg.muted" borderRadius="md">
               <Text fontWeight="semibold" mb={2}>Rate this applicant (1-5 stars):</Text>
@@ -254,7 +311,7 @@ export default function ApplicantCard(props: ApplicantCardProps) {
             </Box>
           )}
 
-          {/* Action buttons - don't show if rejected or approved */}
+          {/* action buttons - don't show if rejected or approved */}
           {!applicant.rejected && !applicant.approved && (
             <HStack gap={2}>
               {!applicant.selected && (

@@ -91,7 +91,9 @@ export const getBookingsByVenue = async (req: Request, res: Response) => {
 
     const bookings = await bookingRepo.find({
         where: { 
-            venue: { id: venueId } 
+            venue: { 
+                id: venueId 
+            } 
         },
         relations: { 
             hirer: true 
@@ -104,7 +106,6 @@ export const getBookingsByVenue = async (req: Request, res: Response) => {
             time: true,
             duration: true,
             bookingStatus: true,
-            complianceScore: true,
             hirer: {
                 id: true,
                 email: true,
@@ -112,7 +113,12 @@ export const getBookingsByVenue = async (req: Request, res: Response) => {
                 lastName: true,
                 totalStars: true,
                 reviewCount: true,
-                complianceScore: true,  // ADD THIS
+                complianceScore: true,
+                driversLicense: true,
+                publicLiabilityInsurance: true,
+                businessRegistration: true,
+                isBusinessApplication: true,
+                abnNumber: true,
             }
         }
     });

@@ -79,6 +79,11 @@ export default function VendorsPage() {
             totalStars: booking.hirer?.totalStars || 0,
             ratingCount: booking.hirer?.reviewCount || 0,
             complianceScore: booking.hirer?.complianceScore || 0,
+            driversLicense: booking.hirer?.driversLicense || null,
+            publicLiabilityInsurance: booking.hirer?.publicLiabilityInsurance || null,
+            businessRegistration: booking.hirer?.businessRegistration || null,
+            isBusinessApplication: booking.hirer?.isBusinessApplication || false,
+            abnNumber: booking.hirer?.abnNumber || null,
           }));
           setApplicants(mapped);
         })
