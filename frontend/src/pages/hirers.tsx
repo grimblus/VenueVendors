@@ -201,8 +201,8 @@ export default function HirerPage() {
                                     title="Your Hirer's Reputation"
                                     body={
                                         <Stack gap={4}>
-                                            {venueRep ? (
-                                                <ReputationCard reputation={venueRep} />
+                                            {userRep ? (
+                                                <ReputationCard reputation={userRep} />
                                             ) : (
                                                 <Text>No reputation data yet</Text>
                                             )}
