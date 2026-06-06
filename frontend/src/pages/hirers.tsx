@@ -19,11 +19,16 @@ import { useEffect } from "react";
 
 export default function HirerPage() {
     const [venues, setVenues] = useState<Venue[]>([]);
-    const [venueRep, setVenueRep] = useState<VenueReputation[]>([]);
+    // const [venueRep, setVenueRep] = useState<VenueReputation[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchDomain, setSearchDomain] = useState("Name");
     const [preferredVenues, setPreferredVenues] = useState<Venue[]>([]);
     const { currentUser } = useAuth();
+
+    const venueRep = currentUser ? {
+        totalStars: currentUser.totalStars || 0,
+        reviewCount: currentUser.reviewCount || 0
+    } : null;
 
     useEffect(() => {
         // fetch venues
@@ -43,16 +48,7 @@ export default function HirerPage() {
                     return res.json();
                 })
                 .then(data => setPreferredVenues(data))
-                .catch(console.error); // silently fails until route exists
-
-            // fetch reputation
-            fetch(`http://localhost:3001/api/reputation/${currentUser.id}`)
-                .then(res => {
-                    if (!res.ok) throw new Error("Failed to fetch reputation");
-                    return res.json();
-                })
-                .then(data => setVenueRep(data))
-                .catch(console.error); // silently fails until route exists
+                .catch(console.error);
         }
     }, [currentUser]);
     
@@ -116,11 +112,11 @@ export default function HirerPage() {
                                 title="Your Hirer's Reputation"
                                 body={
                                     <Stack gap={4}>
-                                    <>                        
-                                        {venueRep.map((reputation, index) => (
-                                            <ReputationCard key={index} reputation={reputation} />
-                                        ))}
-                                    </>
+                                        {venueRep ? (
+                                            <ReputationCard reputation={venueRep} />
+                                        ) : (
+                                            <Text>No reputation data yet</Text>
+                                        )}
                                     </Stack>
                                 }
                                 hideConfirm={true}

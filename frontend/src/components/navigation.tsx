@@ -44,8 +44,8 @@ const Navigation = () => {
         <HStack gap={4}>
             <Link as={NextLink} href="/">Home</Link>
 
-            {/* for both hirer and vendor */}
-            {currentUser && (
+            {/* for hirer only */}
+            {currentUser?.role === "hirer" && (
                 <Link as={NextLink} href="/hirers">Hirer</Link>
             )}
 
@@ -54,8 +54,13 @@ const Navigation = () => {
                 <Link as={NextLink} href="/vendors">Vendor</Link>
             )}
 
-            {/* <Link as={NextLink} href="/hirers">Hirer</Link>
-            <Link as={NextLink} href="/vendors">Vendor</Link> */}
+            {/* for admin only */}
+            {currentUser?.role === "admin" && (
+                <>
+                    <Link as={NextLink} href="/hirers">Hirer</Link>
+                    <Link as={NextLink} href="/vendors">Vendor</Link>
+                </>
+            )}
 
             {currentUser ? (
                 <>

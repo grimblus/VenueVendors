@@ -8,6 +8,8 @@ interface User {
     phone?: string;
     role: string;
     dateCreated: string;
+    totalStars?: number;
+    reviewCount?: number;
 }
 
 interface AuthContextType {

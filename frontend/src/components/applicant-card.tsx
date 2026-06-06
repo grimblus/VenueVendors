@@ -120,6 +120,16 @@ export default function ApplicantCard(props: ApplicantCardProps) {
     alert("Booking confirmed! The applicant has been notified.");
   };
 
+  // so the date doesnt look weird
+  const formatDate = (dateString: string) => {
+      if (!dateString) return "N/A";
+      return new Date(dateString).toLocaleDateString("en-AU", {
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+      });
+  };
+
   return (
     <Card.Root width="full" mb={4}>
       <Card.Body>
@@ -152,7 +162,7 @@ export default function ApplicantCard(props: ApplicantCardProps) {
           <Box>
             <Text fontWeight="semibold">Event Details:</Text>
             <Text>Type: {applicant.eventType}</Text>
-            <Text>Date: {applicant.eventDate}</Text>
+            <Text>Date: {formatDate(applicant.eventDate)}</Text>
             <Text>Expected Guests: {applicant.guestCount}</Text>
             <Text>Requirements: {applicant.venueRequirements}</Text>
           </Box>

@@ -1,11 +1,9 @@
-import { Card, Text } from "@chakra-ui/react";
+import { Card, HStack, Text } from "@chakra-ui/react";
+import { TiStar } from "react-icons/ti";
 
 export interface VenueReputation {
-    name: string;
-    location: string;
-    eventName: string;
-    dateOfHire: string;
-    rating: number;
+    totalStars: number;
+    reviewCount: number;
 }
 
 interface ReputationCardProps {
@@ -15,13 +13,21 @@ interface ReputationCardProps {
 export default function ReputationCard(props: ReputationCardProps) {
   const { reputation } = props;
 
+  const avRating = reputation.reviewCount > 0
+        ? (reputation.totalStars / reputation.reviewCount).toFixed(1)
+        : "No ratings yet";
+
   return (
     <Card.Root w="full" maxW="2xl" mx="auto">
       <Card.Body>
-        <Text>Location: {reputation.location}</Text>
-        <Text>Event Name: {reputation.eventName}</Text>
-        <Text>Date of Hire: {reputation.dateOfHire}</Text>
-        <Text>Rating: {reputation.rating}</Text>
+        <HStack color="yellow.400">
+          <TiStar />
+          <Text fontWeight="semibold">
+            Average Rating: {avRating}
+          </Text>
+        </HStack>
+        <Text>Total Stars: {reputation.totalStars}</Text>
+        <Text>Total Reviews: {reputation.reviewCount}</Text>
       </Card.Body>
     </Card.Root>
   );
