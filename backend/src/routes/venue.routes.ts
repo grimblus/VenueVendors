@@ -1,11 +1,15 @@
 import { Router } from "express";
-import { getAllVenues, getVendorVenues } from "../controllers/VenueController";
+import { getAllVenues, getVendorVenues, createVenue, updateVenue, deleteVenue } from "../controllers/VenueController";
 
 const router = Router();
 
-//for hirer
+// for hirer
 router.get("/", getAllVenues);
-//for vendor
+
+// for vendor
 router.get("/vendor/:vendorId", getVendorVenues);
+router.post("/", createVenue);
+router.put("/:id", updateVenue);
+router.delete("/:id", deleteVenue);
 
 export default router;

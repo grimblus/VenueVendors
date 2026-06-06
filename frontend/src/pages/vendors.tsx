@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { Container, Text, Stack, Box } from "@chakra-ui/react";
+import { Container, Text, Stack, Box, Button, Field, Input, Card, HStack } from "@chakra-ui/react";
 import FooterContainer from "@/components/footer";
 import HeaderContainer from "@/components/header";
 import ApplicantCard, { type Applicant } from "@/components/applicant-card";
 import VendorVenueCard from "@/components/minimal-venue-card";
 import { Venue } from "@/components/venue-card";
-import { HStack, Button } from "@chakra-ui/react"
 import { TiStar } from "react-icons/ti";
 import { useAuth } from "@/context/AuthContext";
 
@@ -13,7 +12,15 @@ export default function VendorsPage() {
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [selectedVenue, setSelectedVenue] = useState<string | null>(null);
+  const [showAddVenue, setShowAddVenue] = useState(false);
   const { currentUser } = useAuth();
+
+  // new venue form state
+  const [newName, setNewName] = useState("");
+  const [newEventType, setNewEventType] = useState("");
+  const [newLocation, setNewLocation] = useState("");
+  const [newImageUrl, setNewImageUrl] = useState("");
+  const [newSuitableEvents, setNewSuitableEvents] = useState("");
 
   useEffect(() => { 
     if (currentUser) {
@@ -33,7 +40,6 @@ export default function VendorsPage() {
       fetch(`http://localhost:3001/api/bookings/venue/${venueId}`)
         .then(res => res.json())
         .then(data => {
-          // mapping booking data to applicant interface
           const mapped = data.map((booking: any) => ({
             id: booking.id,
             hirerId: booking.hirer?.id,
@@ -51,12 +57,115 @@ export default function VendorsPage() {
             approved: booking.bookingStatus === "approved",
             rejected: booking.bookingStatus === "rejected",
             comments: booking.comments || [],
-            totalStars: booking.hirer?.totalStars || 0, 
+            totalStars: booking.hirer?.totalStars || 0,
             ratingCount: booking.hirer?.reviewCount || 0,
           }));
           setApplicants(mapped);
         })
         .catch(console.error);
+    }
+  };
+
+  // CREATE venue
+  const handleAddVenue = async () => {
+    if (!newName || !newEventType || !newLocation) {
+      alert("Name, event type and location are required");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3001/api/venues", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          vendorId: currentUser?.id,
+          name: newName,
+          eventType: newEventType,
+          location: newLocation,
+          imageUrl: newImageUrl,
+          suitableEvents: newSuitableEvents.split(",").map((e) => e.trim()),
+        })
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "Failed to create venue");
+        return;
+      }
+
+      // refresh venues list
+      const updatedRes = await fetch(`http://localhost:3001/api/venues/vendor/${currentUser?.id}`);
+      const updatedData = await updatedRes.json();
+      setVenues(updatedData);
+
+      // reset form
+      setNewName("");
+      setNewEventType("");
+      setNewLocation("");
+      setNewImageUrl("");
+      setNewSuitableEvents("");
+      setShowAddVenue(false);
+      alert("Venue created successfully!");
+    } catch (err) {
+      alert("Failed to connect to server");
+    }
+  };
+
+  // UPDATE venue
+  const handleUpdateVenue = async (updatedVenue: Venue) => {
+    try {
+      const res = await fetch(`http://localhost:3001/api/venues/${updatedVenue.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          vendorId: currentUser?.id,
+          name: updatedVenue.name,
+          eventType: updatedVenue.eventType,
+          location: updatedVenue.location,
+          imageUrl: updatedVenue.imageUrl,
+          suitableEvents: updatedVenue.suitableEvents,
+        })
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "Failed to update venue");
+        return;
+      }
+
+      // update venues list locally
+      setVenues((prev) => prev.map((v) => v.id === updatedVenue.id ? updatedVenue : v));
+      alert("Venue updated successfully!");
+    } catch (err) {
+      alert("Failed to connect to server");
+    }
+  };
+
+  // DELETE venue
+  const handleDeleteVenue = async (venueId: number) => {
+    try {
+      const res = await fetch(`http://localhost:3001/api/venues/${venueId}?vendorId=${currentUser?.id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "Failed to delete venue");
+        return;
+      }
+
+      // remove from local state
+      setVenues((prev) => prev.filter((v) => v.id !== venueId));
+
+      // close applications if this venue was selected
+      if (selectedVenue) {
+        setSelectedVenue(null);
+        setApplicants([]);
+      }
+
+      alert("Venue deleted successfully!");
+    } catch (err) {
+      alert("Failed to connect to server");
     }
   };
 
@@ -91,39 +200,118 @@ export default function VendorsPage() {
             My Venues
           </Text>
 
+          {/* Add venue button */}
+          <Box mb={6} display="flex" justifyContent="flex-end">
+            <Button
+              colorPalette="green"
+              onClick={() => setShowAddVenue(!showAddVenue)}
+            >
+              {showAddVenue ? "Cancel" : "+ Add New Venue"}
+            </Button>
+          </Box>
+
+          {/* Add venue form */}
+          {showAddVenue && (
+            <Card.Root w="full" maxW="2xl" mx="auto" mb={6}>
+              <Card.Body>
+                <Stack gap={3}>
+                  <Text fontWeight="bold" fontSize="lg">Add New Venue</Text>
+
+                  <Field.Root>
+                    <Field.Label>Venue Name</Field.Label>
+                    <Input
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                      placeholder="e.g. Melbourne Hall"
+                    />
+                  </Field.Root>
+
+                  <Field.Root>
+                    <Field.Label>Event Type</Field.Label>
+                    <Input
+                      value={newEventType}
+                      onChange={(e) => setNewEventType(e.target.value)}
+                      placeholder="e.g. Indoor Hall"
+                    />
+                  </Field.Root>
+
+                  <Field.Root>
+                    <Field.Label>Location</Field.Label>
+                    <Input
+                      value={newLocation}
+                      onChange={(e) => setNewLocation(e.target.value)}
+                      placeholder="e.g. 90/130 Swanston Street"
+                    />
+                  </Field.Root>
+
+                  <Field.Root>
+                    <Field.Label>Suitable Events (comma separated)</Field.Label>
+                    <Input
+                      value={newSuitableEvents}
+                      onChange={(e) => setNewSuitableEvents(e.target.value)}
+                      placeholder="Wedding, Conference, Birthday Party"
+                    />
+                  </Field.Root>
+
+                  <Field.Root>
+                    <Field.Label>Image URL</Field.Label>
+                    <Input
+                      value={newImageUrl}
+                      onChange={(e) => setNewImageUrl(e.target.value)}
+                      placeholder="/melbhall.png"
+                    />
+                  </Field.Root>
+
+                  <Button colorPalette="green" onClick={handleAddVenue}>
+                    Create Venue
+                  </Button>
+                </Stack>
+              </Card.Body>
+            </Card.Root>
+          )}
+
+          {/* Venue list */}
           <Stack gap={4}>
-            {venues.map((venue, index) => (
-              <Box key={index}>
-                <VendorVenueCard
-                  venue={venue}
-                  isSelected={selectedVenue === venue.name}
-                  onToggle={() => handleToggleVenue(venue.name, venue.id)}
-                />
-                
-                {selectedVenue === venue.name && (
-                  <Box mt={4} ml={8}>
-                    <Button size="sm" mb={3} onClick={sortByHighestRating}>
-                      Sort by Reputation Rating (<TiStar />)
-                    </Button>
-                    {applicants.length > 0 ? (
-                      <Stack gap={4}>
-                        {applicants.map((applicant) => (
-                          <ApplicantCard
-                            key={applicant.id}
-                            applicant={applicant}
-                            onUpdate={handleUpdate}
-                          />
-                        ))}
-                      </Stack>
-                    ) : (
-                      <Text color="gray.500" p={4}>
-                        No applications for this venue yet
-                      </Text>
-                    )}
-                  </Box>
-                )}
-              </Box>
-            ))}
+            {venues.length === 0 ? (
+              <Text textAlign="center" color="gray.500">
+                No venues yet — add one above!
+              </Text>
+            ) : (
+              venues.map((venue, index) => (
+                <Box key={index}>
+                  <VendorVenueCard
+                    venue={venue}
+                    isSelected={selectedVenue === venue.name}
+                    onToggle={() => handleToggleVenue(venue.name, venue.id)}
+                    onDelete={handleDeleteVenue}
+                    onUpdate={handleUpdateVenue}
+                  />
+
+                  {selectedVenue === venue.name && (
+                    <Box mt={4} ml={8}>
+                      <Button size="sm" mb={3} onClick={sortByHighestRating}>
+                        Sort by Reputation Rating (<TiStar />)
+                      </Button>
+                      {applicants.length > 0 ? (
+                        <Stack gap={4}>
+                          {applicants.map((applicant) => (
+                            <ApplicantCard
+                              key={applicant.id}
+                              applicant={applicant}
+                              onUpdate={handleUpdate}
+                            />
+                          ))}
+                        </Stack>
+                      ) : (
+                        <Text color="gray.500" p={4}>
+                          No applications for this venue yet
+                        </Text>
+                      )}
+                    </Box>
+                  )}
+                </Box>
+              ))
+            )}
           </Stack>
         </Container>
       </div>
