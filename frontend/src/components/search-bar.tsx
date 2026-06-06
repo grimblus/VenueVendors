@@ -68,15 +68,15 @@ export default function SearchBar(props: SearchBarProps) {
     return (
         <HStack w="full" justifyContent="center">
             <InputGroup flex="1" endElement={hasDomain ? <DomainSelect onDomainChange={handleDomainChange}/> : undefined} startElement={<LuSearch />}>
-                <>
                 {/* user cant type if suitable events selected */}
-                {selectedDomain !== "Suitable Events" && (
-                    <Input ps="10" placeholder={placeholder} onChange={(e) => onSearch(e.target.value)}/>
-                )}
-                {selectedDomain === "Suitable Events" && (
-                    <Input ps="10" placeholder="Select from dropdown on the right" readOnly />
-                )}
-                </>
+                <Input placeholder={
+                    selectedDomain === "Suitable Events"
+                        ? "Select from dropdown →"
+                        : placeholder
+                    }
+                    readOnly={selectedDomain === "Suitable Events"}
+                    onChange={(e) => onSearch(e.target.value)}
+                />
             </InputGroup>
             
             {/* shows suitable event dropdown when suitable event clicked */}
