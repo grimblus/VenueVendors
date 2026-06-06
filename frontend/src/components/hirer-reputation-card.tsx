@@ -21,13 +21,13 @@ export default function ReputationCard(props: ReputationCardProps) {
     <Card.Root w="full" maxW="2xl" mx="auto">
       <Card.Body>
         <HStack color="yellow.400">
-                    <TiStar />
-                    <Text fontWeight="semibold">
-                        Average Rating: {avRating}
-                    </Text>
-                </HStack>
-                <Text>Total Stars: {reputation.totalStars}</Text>
-                <Text>Total Reviews: {reputation.reviewCount}</Text>
+          <TiStar />
+          <Text fontWeight="semibold">
+            Average Rating: {avRating}
+          </Text>
+        </HStack>
+        <Text>Total Stars: {reputation.totalStars}</Text>
+        <Text>Total Reviews: {reputation.reviewCount}</Text>
       </Card.Body>
     </Card.Root>
   );
