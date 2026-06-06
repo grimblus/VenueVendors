@@ -71,7 +71,7 @@ export default function SearchBar(props: SearchBarProps) {
                 {/* user cant type if suitable events selected */}
                 <Input placeholder={
                     selectedDomain === "Suitable Events"
-                        ? "Select from dropdown →"
+                        ? "Select from dropdown on the right"
                         : placeholder
                     }
                     readOnly={selectedDomain === "Suitable Events"}
