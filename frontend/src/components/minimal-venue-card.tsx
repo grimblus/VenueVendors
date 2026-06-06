@@ -1,4 +1,4 @@
-import { Card, HStack, Text, Button, Box, Field, Input, Stack } from "@chakra-ui/react";
+import { Card, HStack, Text, Button, Field, Input, Stack } from "@chakra-ui/react";
 import { type Venue } from "@/components/venue-card";
 import { useState } from "react";
 
@@ -21,10 +21,29 @@ export default function VendorVenueCard(props: VendorVenueCardProps) {
   const [editName, setEditName] = useState(venue.name);
   const [editEventType, setEditEventType] = useState(venue.eventType || "");
   const [editLocation, setEditLocation] = useState(venue.location || "");
-  const [editImageUrl, setEditImageUrl] = useState(venue.imageUrl || "");
+  const [editImageFile, setEditImageFile] = useState<string | null>(null);
+  const [editImageFileName, setEditImageFileName] = useState<string>("");
   const [editSuitableEvents, setEditSuitableEvents] = useState(
     venue.suitableEvents?.join(", ") || ""
   );
+
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const base64 = await convertToBase64(file);
+      setEditImageFile(base64);
+      setEditImageFileName(file.name);
+    }
+  };
 
   const handleSaveEdit = () => {
     if (!editName || !editEventType || !editLocation) {
@@ -37,7 +56,7 @@ export default function VendorVenueCard(props: VendorVenueCardProps) {
       name: editName,
       eventType: editEventType,
       location: editLocation,
-      imageUrl: editImageUrl,
+      imageUrl: editImageFile || venue.imageUrl,
       suitableEvents: editSuitableEvents.split(",").map((e) => e.trim()),
     };
 
@@ -55,7 +74,6 @@ export default function VendorVenueCard(props: VendorVenueCardProps) {
     <Card.Root w="full" maxW="2xl" mx="auto">
       <Card.Body>
         {isEditing ? (
-          // EDIT MODE
           <Stack gap={3}>
             <Text fontWeight="bold" fontSize="lg">Editing: {venue.name}</Text>
 
@@ -93,12 +111,33 @@ export default function VendorVenueCard(props: VendorVenueCardProps) {
             </Field.Root>
 
             <Field.Root>
-              <Field.Label>Image URL</Field.Label>
-              <Input
-                value={editImageUrl}
-                onChange={(e) => setEditImageUrl(e.target.value)}
-                placeholder="/melbhall.png"
+              <Field.Label>Venue Image</Field.Label>
+              <input
+                id="editVenueImageUpload"
+                type="file"
+                accept=".jpg,.jpeg,.png"
+                onChange={handleImageUpload}
+                style={{ display: "none" }}
               />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => document.getElementById("editVenueImageUpload")?.click()}
+              >
+                Choose Image
+              </Button>
+              {editImageFileName && (
+                <Text fontSize="sm" color="gray.500" mt={1}>
+                  {editImageFileName}
+                </Text>
+              )}
+              {(editImageFile || venue.imageUrl) && (
+                <img
+                  src={editImageFile || venue.imageUrl as string}
+                  alt="venue preview"
+                  style={{ width: "200px", height: "100px", objectFit: "cover", marginTop: "8px", borderRadius: "4px" }}
+                />
+              )}
             </Field.Root>
 
             <HStack gap={2}>
@@ -111,7 +150,6 @@ export default function VendorVenueCard(props: VendorVenueCardProps) {
             </HStack>
           </Stack>
         ) : (
-          // VIEW MODE
           <HStack w="100%" justifyContent="space-between">
             <Text textStyle="3xl" fontWeight="semibold">{venue.name}</Text>
 

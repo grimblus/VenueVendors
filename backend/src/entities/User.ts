@@ -29,6 +29,25 @@ export class User {
   @Column({ default: 0 })
   reviewCount: number;
 
+  // compliance document fields
+  @Column({ nullable: true, type: "nvarchar", length: "MAX" })
+  driversLicense: string;
+
+  @Column({ nullable: true, type: "nvarchar", length: "MAX" })
+  publicLiabilityInsurance: string;
+
+  @Column({ default: false })
+  isBusinessApplication: boolean;
+
+  @Column({ nullable: true })
+  abnNumber: string;
+
+  @Column({ nullable: true, type: "nvarchar", length: "MAX" })
+  businessRegistration: string;
+
+  @Column({ default: 0 })
+  complianceScore: number;
+
   @CreateDateColumn()
   dateCreated: Date;
 }

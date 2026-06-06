@@ -102,3 +102,38 @@ export const updateProfile = async (req: Request, res: Response) => {
         }
     });
 };
+
+export const updateUserDocuments = async (req: Request, res: Response) => {
+    try {
+        const id = Number(req.params.id as string);
+        const { 
+            driversLicense, 
+            publicLiabilityInsurance, 
+            isBusinessApplication, 
+            abnNumber, 
+            businessRegistration, 
+            complianceScore 
+        } = req.body;
+
+        const user = await userRepository.findOne({ where: { id } });
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        user.driversLicense = driversLicense;
+        user.publicLiabilityInsurance = publicLiabilityInsurance;
+        user.isBusinessApplication = isBusinessApplication;
+        user.abnNumber = abnNumber;
+        user.businessRegistration = businessRegistration;
+        user.complianceScore = complianceScore;
+
+        await userRepository.save(user);
+        return res.status(200).json({ 
+            message: "Documents updated successfully",
+            complianceScore: user.complianceScore
+        });
+    } catch (error) {
+        console.error("Error updating documents:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};

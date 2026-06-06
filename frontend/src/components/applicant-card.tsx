@@ -26,6 +26,7 @@ export interface Applicant {
     //star-rating below (total star count and total amount of ratings coming from users)
     totalStars: number;
     ratingCount: number;
+    complianceScore: number;
 }
 
 export interface ApplicantCardProps {
@@ -143,6 +144,16 @@ export default function ApplicantCard(props: ApplicantCardProps) {
                 <TiStar/>
                 <Text>Rating: {averageRating} {applicant.ratingCount > 0 && `(${applicant.ratingCount} reviews)`}
                 </Text>
+              </HStack>
+              <HStack fontWeight="semibold">
+                  <Text>Compliance Score: </Text>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                      <TiStar
+                          key={star}
+                          color={star <= applicant.complianceScore ? "gold" : "gray"}
+                      />
+                  ))}
+                  <Text>({applicant.complianceScore}/5)</Text>
               </HStack>
             </Box>
             <Box>

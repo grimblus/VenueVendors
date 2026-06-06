@@ -25,6 +25,6 @@ export class Venue {
   @Column()
   location: string;
 
-  @Column({ nullable: true})
+  @Column({ nullable: true, type: "nvarchar", length: "MAX" })
   imageUrl: string;
 }

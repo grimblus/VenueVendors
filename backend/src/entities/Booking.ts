@@ -22,16 +22,33 @@ export class Booking {
   @Column()
   date: Date;
 
-  // Time stored as string in "HH:mm", there wasnt a time type so Im doing string
   @Column()
   time: string;
 
   @Column()
   duration: number;
 
-  // Statuses are pending, accepted, rejected
   @Column({ default: "pending" })
   bookingStatus: string;
+
+  // compliance documents
+  @Column({ nullable: true, type: "nvarchar", length: "MAX" })
+  driversLicense: string;        // base64 jpg
+
+  @Column({ nullable: true, type: "nvarchar", length: "MAX" })
+  publicLiabilityInsurance: string;  // base64 pdf
+
+  @Column({ default: false })
+  isBusinessApplication: boolean;
+
+  @Column({ nullable: true })
+  abnNumber: string;
+
+  @Column({ nullable: true, type: "nvarchar", length: "MAX" })
+  businessRegistration: string;  // base64 pdf
+
+  @Column({ default: 0 })
+  complianceScore: number; 
 
   @CreateDateColumn()
   dateCreated: Date;

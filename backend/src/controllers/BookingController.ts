@@ -9,18 +9,23 @@ const userRepo = AppDataSource.getRepository(User);
 const venueRepo = AppDataSource.getRepository(Venue);
 
 export const createBooking = async (req: Request, res: Response) => {
-    const { hirerId, venueId, eventName, date, time, duration, capacity } = req.body;
+    const { 
+        hirerId, 
+        venueId, 
+        eventName, 
+        date, 
+        time, 
+        duration, 
+        capacity,
+        driversLicense,
+        publicLiabilityInsurance,
+        isBusinessApplication,
+        abnNumber,
+        businessRegistration
+    } = req.body;
 
     if (!hirerId || !venueId || !eventName || !date || !time || !duration) {
-        return res.status(400).json({ error: "Please fill in all fields" });
-    }
-
-    if (isNaN(Number(duration)) || Number(duration) <= 0) {
-        return res.status(400).json({ error: "Duration must be a positive number" });
-    }
-
-    if (isNaN(Number(capacity)) || Number(capacity) <= 0) {
-        return res.status(400).json({ error: "Capacity must be a positive number" });
+        return res.status(400).json({ error: "Please fill in all required fields" });
     }
 
     const hirer = await userRepo.findOne({ where: { id: hirerId } });
@@ -33,6 +38,14 @@ export const createBooking = async (req: Request, res: Response) => {
         return res.status(404).json({ error: "Venue not found" });
     }
 
+    // calculate compliance score
+    const complianceScore = calculateComplianceScore(
+        driversLicense,
+        publicLiabilityInsurance,
+        isBusinessApplication,
+        businessRegistration
+    );
+
     const booking = bookingRepo.create({
         hirer,
         venue,
@@ -41,7 +54,13 @@ export const createBooking = async (req: Request, res: Response) => {
         date,
         time,
         duration,
-        bookingStatus: "pending"
+        bookingStatus: "pending",
+        driversLicense: driversLicense || null,
+        publicLiabilityInsurance: publicLiabilityInsurance || null,
+        isBusinessApplication: isBusinessApplication || false,
+        abnNumber: abnNumber || null,
+        businessRegistration: businessRegistration || null,
+        complianceScore,
     });
 
     await bookingRepo.save(booking);
@@ -72,12 +91,29 @@ export const getBookingsByVenue = async (req: Request, res: Response) => {
 
     const bookings = await bookingRepo.find({
         where: { 
-            venue: { 
-                id: venueId 
-            } 
+            venue: { id: venueId } 
         },
         relations: { 
             hirer: true 
+        },
+        select: {
+            id: true,
+            eventName: true,
+            expectedGuests: true,
+            date: true,
+            time: true,
+            duration: true,
+            bookingStatus: true,
+            complianceScore: true,
+            hirer: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                totalStars: true,
+                reviewCount: true,
+                complianceScore: true,  // ADD THIS
+            }
         }
     });
 
@@ -102,4 +138,20 @@ export const updateBooking = async (req: Request, res: Response) => {
 
     await bookingRepo.save(booking);
     return res.status(200).json({ message: "Booking updated successfully", booking });
+};
+
+// calculates score based on submitted documents
+const calculateComplianceScore = (
+    driversLicense: string | null,
+    publicLiabilityInsurance: string | null,
+    isBusinessApplication: boolean,
+    businessRegistration: string | null
+): number => {
+    let score = 0;
+
+    if (driversLicense) score += 2; // 2 stars for drivers license
+    if (publicLiabilityInsurance) score += 2; // 2 stars for insurance
+    if (isBusinessApplication && businessRegistration) score += 1; // 1 star for business registration
+
+    return Math.min(score, 5); // cap at 5
 };

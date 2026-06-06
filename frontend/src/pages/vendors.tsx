@@ -19,10 +19,29 @@ export default function VendorsPage() {
   const [newName, setNewName] = useState("");
   const [newEventType, setNewEventType] = useState("");
   const [newLocation, setNewLocation] = useState("");
-  const [newImageUrl, setNewImageUrl] = useState("");
+  const [newImageFile, setNewImageFile] = useState<string | null>(null);
+  const [newImageFileName, setNewImageFileName] = useState<string>("");
   const [newSuitableEvents, setNewSuitableEvents] = useState("");
 
-  useEffect(() => { 
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleNewImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const base64 = await convertToBase64(file);
+      setNewImageFile(base64);
+      setNewImageFileName(file.name);
+    }
+  };
+
+  useEffect(() => {
     if (currentUser) {
       fetch(`http://localhost:3001/api/venues/vendor/${currentUser.id}`)
         .then(res => res.json())
@@ -59,6 +78,7 @@ export default function VendorsPage() {
             comments: booking.comments || [],
             totalStars: booking.hirer?.totalStars || 0,
             ratingCount: booking.hirer?.reviewCount || 0,
+            complianceScore: booking.hirer?.complianceScore || 0,
           }));
           setApplicants(mapped);
         })
@@ -82,7 +102,7 @@ export default function VendorsPage() {
           name: newName,
           eventType: newEventType,
           location: newLocation,
-          imageUrl: newImageUrl,
+          imageUrl: newImageFile || "",
           suitableEvents: newSuitableEvents.split(",").map((e) => e.trim()),
         })
       });
@@ -93,7 +113,6 @@ export default function VendorsPage() {
         return;
       }
 
-      // refresh venues list
       const updatedRes = await fetch(`http://localhost:3001/api/venues/vendor/${currentUser?.id}`);
       const updatedData = await updatedRes.json();
       setVenues(updatedData);
@@ -102,7 +121,8 @@ export default function VendorsPage() {
       setNewName("");
       setNewEventType("");
       setNewLocation("");
-      setNewImageUrl("");
+      setNewImageFile(null);
+      setNewImageFileName("");
       setNewSuitableEvents("");
       setShowAddVenue(false);
       alert("Venue created successfully!");
@@ -133,7 +153,6 @@ export default function VendorsPage() {
         return;
       }
 
-      // update venues list locally
       setVenues((prev) => prev.map((v) => v.id === updatedVenue.id ? updatedVenue : v));
       alert("Venue updated successfully!");
     } catch (err) {
@@ -154,10 +173,8 @@ export default function VendorsPage() {
         return;
       }
 
-      // remove from local state
       setVenues((prev) => prev.filter((v) => v.id !== venueId));
 
-      // close applications if this venue was selected
       if (selectedVenue) {
         setSelectedVenue(null);
         setApplicants([]);
@@ -186,7 +203,7 @@ export default function VendorsPage() {
       body: JSON.stringify(updatedApplicant)
     });
 
-    setApplicants((prev) => prev.map((app) => 
+    setApplicants((prev) => prev.map((app) =>
       app.id === updatedApplicant.id ? updatedApplicant : app
     ));
   };
@@ -254,12 +271,33 @@ export default function VendorsPage() {
                   </Field.Root>
 
                   <Field.Root>
-                    <Field.Label>Image URL</Field.Label>
-                    <Input
-                      value={newImageUrl}
-                      onChange={(e) => setNewImageUrl(e.target.value)}
-                      placeholder="/melbhall.png"
+                    <Field.Label>Venue Image</Field.Label>
+                    <input
+                      id="venueImageUpload"
+                      type="file"
+                      accept=".jpg,.jpeg,.png"
+                      onChange={handleNewImageUpload}
+                      style={{ display: "none" }}
                     />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => document.getElementById("venueImageUpload")?.click()}
+                    >
+                      Choose Image
+                    </Button>
+                    {newImageFileName && (
+                      <Text fontSize="sm" color="gray.500" mt={1}>
+                        {newImageFileName}
+                      </Text>
+                    )}
+                    {newImageFile && (
+                      <img
+                        src={newImageFile}
+                        alt="venue preview"
+                        style={{ width: "200px", height: "100px", objectFit: "cover", marginTop: "8px", borderRadius: "4px" }}
+                      />
+                    )}
                   </Field.Root>
 
                   <Button colorPalette="green" onClick={handleAddVenue}>
