@@ -19,17 +19,11 @@ import { useEffect } from "react";
 
 export default function HirerPage() {
     const [venues, setVenues] = useState<Venue[]>([]);
-    // const [venueRep, setVenueRep] = useState<VenueReputation[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchDomain, setSearchDomain] = useState("Name");
     const [preferredVenues, setPreferredVenues] = useState<Venue[]>([]);
     const [userRep, setUserRep] = useState<{ totalStars: number; reviewCount: number }>({ totalStars: 0, reviewCount: 0 });
     const { currentUser } = useAuth();
-
-    const venueRep = currentUser ? {
-        totalStars: currentUser.totalStars || 0,
-        reviewCount: currentUser.reviewCount || 0
-    } : null;
 
     useEffect(() => {
         // fetch venues
