@@ -23,6 +23,7 @@ export default function HirerPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchDomain, setSearchDomain] = useState("Name");
     const [preferredVenues, setPreferredVenues] = useState<Venue[]>([]);
+    const [userRep, setUserRep] = useState<{ totalStars: number; reviewCount: number }>({ totalStars: 0, reviewCount: 0 });
     const { currentUser } = useAuth();
 
     // compliance document states
@@ -35,11 +36,6 @@ export default function HirerPage() {
     const [businessRegistration, setBusinessRegistration] = useState<string | null>(null);
     const [businessRegFileName, setBusinessRegFileName] = useState<string>("");
     const [complianceScore, setComplianceScore] = useState(0);
-
-    const venueRep = currentUser ? {
-        totalStars: currentUser.totalStars || 0,
-        reviewCount: currentUser.reviewCount || 0
-    } : null;
 
     const convertToBase64 = (file: File): Promise<string> => {
         return new Promise((resolve, reject) => {
@@ -135,6 +131,19 @@ export default function HirerPage() {
                     return res.json();
                 })
                 .then(data => setPreferredVenues(data))
+                .catch(console.error);
+        }
+
+        if (currentUser) {
+            // fetch user rep
+            fetch(`http://localhost:3001/api/users/profile/${currentUser.id}`)
+                .then(res => res.json())
+                .then(data => {
+                    setUserRep({
+                        totalStars: data.totalStars || 0,
+                        reviewCount: data.reviewCount || 0
+                    });
+                })
                 .catch(console.error);
         }
     }, [currentUser]);
@@ -359,6 +368,9 @@ export default function HirerPage() {
                         onSearch={(query) => setSearchQuery(query)} 
                         onDomainChange={(domain) => setSearchDomain(domain)} 
                         hasDomain={true}/>
+                    <Center mt={4}>
+                        Currently searching for: {searchQuery} in: {searchDomain}
+                    </Center>                        
                     <Stack mt={6} gap={4}>
                         {filteredVenues.length > 0 ? (
                             filteredVenues.map((venue, index) => (
