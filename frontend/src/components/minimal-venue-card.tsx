@@ -1,6 +1,7 @@
-import { Card, HStack, Text, Button, Field, Input, Stack } from "@chakra-ui/react";
+import { Card, HStack, Text, Button, Field, Input, Stack, Box } from "@chakra-ui/react";
 import { type Venue } from "@/components/venue-card";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export interface VendorVenueCardProps {
   venue: Venue;
@@ -8,6 +9,18 @@ export interface VendorVenueCardProps {
   onToggle: () => void;
   onDelete: (venueId: number) => void;
   onUpdate: (updatedVenue: Venue) => void;
+
+  onBlockTimeslot?: (
+    venueId: number,
+    date: string,
+    startTime: string,
+    endTime: string
+  ) => void;
+
+  onUnblockTimeslot?: (
+    venueId: number,
+    slotId: number
+  ) => void;
 }
 
 export default function VendorVenueCard(props: VendorVenueCardProps) {
@@ -26,6 +39,13 @@ export default function VendorVenueCard(props: VendorVenueCardProps) {
   const [editSuitableEvents, setEditSuitableEvents] = useState(
     venue.suitableEvents?.join(", ") || ""
   );
+
+  // block timeslot
+  const [blockDate, setBlockDate] = useState("");
+  const [blockStartTime, setBlockStartTime] = useState("");
+  const [blockEndTime, setBlockEndTime] = useState("");
+
+  const { currentUser } = useAuth();
 
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -148,6 +168,67 @@ export default function VendorVenueCard(props: VendorVenueCardProps) {
                 Cancel
               </Button>
             </HStack>
+
+            <Text fontWeight="bold">Block Timeslots</Text>
+            <HStack align="end" flexWrap="wrap">
+              <Field.Root>
+                <Field.Label>Date</Field.Label>
+                <Input
+                  type="date"
+                  value={blockDate}
+                  onChange={(e) => setBlockDate(e.target.value)}
+                />
+              </Field.Root>
+
+              <Field.Root>
+                <Field.Label>Start Time</Field.Label>
+                <Input
+                  type="time"
+                  value={blockStartTime}
+                  onChange={(e) => setBlockStartTime(e.target.value)}
+                />
+              </Field.Root>
+
+              <Field.Root>
+                <Field.Label>End Time</Field.Label>
+                <Input
+                  type="time"
+                  value={blockEndTime}
+                  onChange={(e) => setBlockEndTime(e.target.value)}
+                />
+              </Field.Root>
+
+              <Button
+                colorPalette="red"
+                onClick={() => props.onBlockTimeslot?.(
+                    venue.id,
+                    blockDate,
+                    blockStartTime,
+                    blockEndTime
+                  )
+                }
+              >
+                Block
+              </Button>
+            </HStack>
+
+            {venue.blockedTimeslots &&
+              JSON.parse(venue.blockedTimeslots).map((slot: any) => (
+                <HStack key={slot.id} justify="space-between" p={2} borderWidth={1} borderRadius="md">
+                  <Text>
+                    {slot.date} | {slot.startTime} - {slot.endTime}
+                  </Text>
+
+                  <Button size="xs" colorPalette="green" onClick={() =>
+                      props.onUnblockTimeslot?.(
+                        venue.id,
+                        slot.id
+                      )}
+                  >
+                    Unblock
+                  </Button>
+                </HStack>
+              ))}
           </Stack>
         ) : (
           <HStack w="100%" justifyContent="space-between">

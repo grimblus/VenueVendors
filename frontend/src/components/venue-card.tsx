@@ -18,6 +18,7 @@ export interface Venue {
     eventType?: string;
     suitableEvents?: string[];
     preference?: number;
+    blockedTimeslots?: string;
     vendor?: {
         id: number;
         firstName: string;

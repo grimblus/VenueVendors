@@ -27,4 +27,7 @@ export class Venue {
 
   @Column({ nullable: true, type: "nvarchar", length: "MAX" })
   imageUrl: string;
+  
+  @Column({ type: "text", nullable: true })
+  blockedTimeslots?: string;
 }
