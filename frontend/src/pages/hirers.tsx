@@ -157,6 +157,9 @@ export default function HirerPage() {
                         onSearch={(query) => setSearchQuery(query)} 
                         onDomainChange={(domain) => setSearchDomain(domain)} 
                         hasDomain={true}/>
+                    <Center mt={4}>
+                        Currently searching for: {searchQuery} in: {searchDomain}
+                    </Center>                        
                     <Stack mt={6} gap={4}>
                         {filteredVenues.length > 0 ? (
                             filteredVenues.map((venue, index) => (
