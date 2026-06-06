@@ -23,6 +23,11 @@ export default function VendorsPage() {
   const [newImageFileName, setNewImageFileName] = useState<string>("");
   const [newSuitableEvents, setNewSuitableEvents] = useState("");
 
+  //blocktime
+  const [blockDate, setBlockDate] = useState("");
+  const [blockTime, setBlockTime] = useState("");
+  const [blockReason, setBlockReason] = useState("");
+
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -213,6 +218,90 @@ export default function VendorsPage() {
     ));
   };
 
+  const handleBlockTimeslot = async (
+    venueId: number,
+    date: string,
+    startTime: string,
+    endTime: string
+  ) => {
+
+    if (!date || !startTime || !endTime) {
+      alert("Please enter a date and time range");
+      return;
+    }
+
+    const res = await fetch(
+      "http://localhost:3001/api/venues/block",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          venueId,
+          date,
+          startTime,
+          endTime
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Failed");
+      return;
+    }
+
+    const updatedRes = await fetch(
+      `http://localhost:3001/api/venues/vendor/${currentUser?.id}`
+    );
+
+    const updatedData = await updatedRes.json();
+
+    setVenues(updatedData);
+
+    alert("Timeslot successfully blocked");
+  };
+
+  const handleUnblockTimeslot = async (
+    venueId: number,
+    slotId: number
+  ) => {
+
+    console.log("Sending venueId:", venueId);
+
+    const res = await fetch(
+      "http://localhost:3001/api/venues/unblock",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          venueId,
+          slotId
+        })
+      }
+    );
+
+    if (!res.ok) {
+      const data = await res.json();
+      alert(data.error || "Failed");
+      return;
+    }
+
+    const updatedRes = await fetch(
+      `http://localhost:3001/api/venues/vendor/${currentUser?.id}`
+    );
+
+    const updatedData = await updatedRes.json();
+
+    setVenues(updatedData);
+
+    alert("Timeslot successfully unblocked");
+  };
+
   return (
     <div className="vendorsPage min-h-screen flex flex-col">
       <HeaderContainer />
@@ -328,6 +417,8 @@ export default function VendorsPage() {
                     onToggle={() => handleToggleVenue(venue.name, venue.id)}
                     onDelete={handleDeleteVenue}
                     onUpdate={handleUpdateVenue}
+                    onBlockTimeslot={handleBlockTimeslot}
+                    onUnblockTimeslot={handleUnblockTimeslot}
                   />
 
                   {selectedVenue === venue.name && (

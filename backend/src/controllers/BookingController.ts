@@ -38,6 +38,41 @@ export const createBooking = async (req: Request, res: Response) => {
         return res.status(404).json({ error: "Venue not found" });
     }
 
+    //Timeblock stuff
+    const blocked = venue.blockedTimeslots
+    ? JSON.parse(venue.blockedTimeslots)
+    : [];
+
+    const bookingStart = time;
+
+    const bookingEndDate = new Date(`2000-01-01T${time}:00`);
+
+    bookingEndDate.setHours(
+        bookingEndDate.getHours() + Number(duration)
+    );
+
+    const bookingEnd =
+        bookingEndDate.toTimeString().slice(0, 5);
+
+    const conflictsWithBlocked = blocked.some(
+        (slot: any) => {
+            if (slot.date !== date) {
+                return false;
+            }
+            return (
+                bookingStart < slot.endTime &&
+                bookingEnd > slot.startTime
+            );
+        }
+    );
+
+    if (conflictsWithBlocked) {
+        return res.status(400).json({
+            error:
+                "Venue is currently blocked for this time"
+        });
+    }
+
     // calculate compliance score
     const complianceScore = calculateComplianceScore(
         driversLicense,

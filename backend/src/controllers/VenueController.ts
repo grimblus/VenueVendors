@@ -132,3 +132,101 @@ export const deleteVenue = async (req: Request, res: Response) => {
         return res.status(500).json({ error: "Internal server error" });
     }
 };
+
+export const blockTimeslot = async (req: Request, res: Response) => {
+    try {
+        const { venueId, date, startTime, endTime } = req.body;
+
+        if (!venueId || !date || !startTime || !endTime) {
+            return res.status(400).json({
+                error: "venueId, date, startTime and endTime are required"
+            });
+        }
+
+        if (startTime >= endTime) {
+            return res.status(400).json({
+                error: "End time must be after start time"
+            });
+        }
+
+        const allVenues = await venueRepo.find();
+
+        const venue = await venueRepo.findOne({
+            where: {
+                id: Number(venueId)
+            }
+        });
+
+        if (!venue) {
+            const allVenues = await venueRepo.find();
+
+            return res.status(404).json({
+                error: "Venue not found",
+                receivedVenueId: venueId,
+                convertedVenueId: Number(venueId),
+                availableVenues: allVenues.map(venue => ({
+                    id: venue.id,
+                    name: venue.name
+                }))
+            });
+        }
+
+        // alr blocked slots
+        const blocked = venue.blockedTimeslots 
+            ? JSON.parse(venue.blockedTimeslots) 
+            : [];
+
+        const overlaps = blocked.some((slot: any) => {
+            if (slot.date !== date) return false;
+
+            return (startTime < slot.endTime && endTime > slot.startTime);
+        });
+
+        if (overlaps) {
+            return res.status(400).json({ error: "This timeslot overlaps an existing blocked period" });
+        }
+
+        // add new slot
+        blocked.push({
+            id: Date.now(),
+            date,
+            startTime,
+            endTime
+        });
+        venue.blockedTimeslots = JSON.stringify(blocked);
+
+        await venueRepo.save(venue);
+        return res.json({ message: "Timeslot blocked", blocked });
+    } catch (error) {
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+export const unblockTimeslot = async (req: Request, res: Response) => {
+    try {
+        const { venueId, slotId } = req.body;
+        const venueRepo = AppDataSource.getRepository(Venue);
+
+        const venue = await venueRepo.findOne({
+            where: {
+                id: Number(venueId)
+            }
+        });
+
+        if (!venue) return res.status(404).json({ error: "Venue not found" });
+
+        const blocked = venue.blockedTimeslots 
+            ? JSON.parse(venue.blockedTimeslots) 
+            : [];
+
+        // remove slot
+        venue.blockedTimeslots = JSON.stringify(
+            blocked.filter((slot: any) => slot.id !== slotId)
+        );
+
+        await venueRepo.save(venue);
+        return res.json({ message: "Timeslot unblocked" });
+    } catch (error) {
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
