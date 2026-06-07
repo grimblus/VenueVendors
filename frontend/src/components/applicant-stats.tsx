@@ -1,12 +1,22 @@
-import { Box, Text, Stack, Card, HStack, Badge } from "@chakra-ui/react";
+import { Box, Text, Stack, Card, HStack, Spinner, Center } from "@chakra-ui/react";
 import { TiStar } from "react-icons/ti";
 import { Applicant } from "./applicant-card";
 
 interface ApplicantStatsProps {
     applicants: Applicant[];
+    loading?: boolean;
 }
 
-export default function ApplicantStats({ applicants }: ApplicantStatsProps) {
+export default function ApplicantStats({ applicants, loading }: ApplicantStatsProps) {
+    if (loading) {
+        return (
+            <Center mt={8} flexDirection="column" gap={4}>
+                <Spinner size="xl" color="blue.500" />
+                <Text color="gray.500">Loading applicant stats...</Text>
+            </Center>
+        );
+    }
+
     if (applicants.length === 0) {
         return <Text color="gray.500" mt={6}>No applicants to display stats for.</Text>;
     }

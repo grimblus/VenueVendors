@@ -2,20 +2,20 @@ import HeaderContainer from "@/components/header";
 import FooterContainer from "@/components/footer";
 import { Container, Text, HStack, Button } from "@chakra-ui/react";
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Applicant } from "@/components/applicant-card";
-import { useEffect } from "react";
 import ApplicantStats from "@/components/applicant-stats";
 import VendorCharts from "@/components/vendor-charts";
-import { TfiViewListAlt } from "react-icons/tfi";
 
 export default function ApplicantChartsPage() {
     const [applicants, setApplicants] = useState<Applicant[]>([]);
+    const [loading, setLoading] = useState(true);
     const { currentUser } = useAuth();
     const [allHirers, setAllHirers] = useState(false);
 
-     useEffect(() => {
+    useEffect(() => {
         if (currentUser) {
+            setLoading(true);
             const url = allHirers 
                 ? "http://localhost:3001/api/bookings/all"
                 : `http://localhost:3001/api/bookings/vendor-stats/${currentUser.id}`;            
@@ -41,10 +41,15 @@ export default function ApplicantChartsPage() {
                         comments: [],
                         totalStars: booking.hirer?.totalStars || 0,
                         ratingCount: booking.hirer?.reviewCount || 0,
+                        complianceScore: 0,
                     }));
                     setApplicants(mapped);
+                    setLoading(false);
                 })
-                .catch(console.error);
+                .catch(err => {
+                    console.error(err);
+                    setLoading(false);
+                });
         }
     }, [currentUser, allHirers]);
 
@@ -74,7 +79,9 @@ export default function ApplicantChartsPage() {
                         </Button>
                     </HStack>
 
-                    <ApplicantStats applicants={applicants} />
+                    {/* Pass loading to ApplicantStats */}
+                    <ApplicantStats applicants={applicants} loading={loading} />
+                    
                     {currentUser && <VendorCharts vendorId={currentUser.id}/>}
                 </Container>
             </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Text, Stack, Box, Button, Field, Input, Card, HStack } from "@chakra-ui/react";
+import { Container, Text, Stack, Box, Button, Field, Input, Card, HStack, Spinner, Center } from "@chakra-ui/react";
 import FooterContainer from "@/components/footer";
 import HeaderContainer from "@/components/header";
 import ApplicantCard, { type Applicant } from "@/components/applicant-card";
@@ -14,6 +14,8 @@ export default function VendorsPage() {
   const [selectedVenue, setSelectedVenue] = useState<string | null>(null);
   const [showAddVenue, setShowAddVenue] = useState(false);
   const { currentUser } = useAuth();
+  const [applicantsLoading, setApplicantsLoading] = useState(false);
+  const [venuesLoading, setVenuesLoading] = useState(true);
 
   // new venue form state
   const [newName, setNewName] = useState("");
@@ -50,8 +52,14 @@ export default function VendorsPage() {
     if (currentUser) {
       fetch(`http://localhost:3001/api/venues/vendor/${currentUser.id}`)
         .then(res => res.json())
-        .then(data => setVenues(data))
-        .catch(console.error);
+        .then(data => {
+          setVenues(data);
+          setVenuesLoading(false); 
+        })
+        .catch(err => {
+          console.error(err);
+          setVenuesLoading(false);
+        });
     }
   }, [currentUser]);
 
@@ -61,6 +69,8 @@ export default function VendorsPage() {
       setApplicants([]);
     } else {
       setSelectedVenue(venueName);
+      console.log("Setting loading to true");
+      setApplicantsLoading(true);
       fetch(`http://localhost:3001/api/bookings/venue/${venueId}`)
         .then(res => res.json())
         .then(data => {
@@ -91,10 +101,14 @@ export default function VendorsPage() {
             abnNumber: booking.hirer?.abnNumber || null,
           }));
           setApplicants(mapped);
+          setApplicantsLoading(false);
         })
-        .catch(console.error);
+        .catch(err => {
+          console.error(err);
+          setApplicantsLoading(false);
+        });
     }
-  };
+};
 
   // CREATE venue
   const handleAddVenue = async () => {
@@ -403,50 +417,62 @@ export default function VendorsPage() {
           )}
 
           {/* Venue list */}
-          <Stack gap={4}>
-            {venues.length === 0 ? (
-              <Text textAlign="center" color="gray.500">
+          {venuesLoading ? (
+            <Center mt={8} flexDirection="column" gap={4}>
+                <Spinner size="xl" color="blue.500" />
+                <Text color="gray.500">Loading venues...</Text>
+            </Center>
+          ) : venues.length === 0 ? (
+            <Text textAlign="center" color="gray.500">
                 No venues yet — add one above!
-              </Text>
-            ) : (
-              venues.map((venue, index) => (
-                <Box key={index}>
-                  <VendorVenueCard
-                    venue={venue}
-                    isSelected={selectedVenue === venue.name}
-                    onToggle={() => handleToggleVenue(venue.name, venue.id)}
-                    onDelete={handleDeleteVenue}
-                    onUpdate={handleUpdateVenue}
-                    onBlockTimeslot={handleBlockTimeslot}
-                    onUnblockTimeslot={handleUnblockTimeslot}
-                  />
+            </Text>
+          ) : (
+            <Stack gap={4}>
+                {venues.map((venue, index) => (
+                  <Box key={index}>
+                    <VendorVenueCard
+                      venue={venue}
+                      isSelected={selectedVenue === venue.name}
+                      onToggle={() => handleToggleVenue(venue.name, venue.id)}
+                      onDelete={handleDeleteVenue}
+                      onUpdate={handleUpdateVenue}
+                      onBlockTimeslot={handleBlockTimeslot}
+                      onUnblockTimeslot={handleUnblockTimeslot}
+                    />
 
-                  {selectedVenue === venue.name && (
-                    <Box mt={4} ml={8}>
-                      <Button size="sm" mb={3} onClick={sortByHighestRating}>
-                        Sort by Reputation Rating (<TiStar />)
-                      </Button>
-                      {applicants.length > 0 ? (
-                        <Stack gap={4}>
-                          {applicants.map((applicant) => (
-                            <ApplicantCard
-                              key={applicant.id}
-                              applicant={applicant}
-                              onUpdate={handleUpdate}
-                            />
-                          ))}
-                        </Stack>
-                      ) : (
-                        <Text color="gray.500" p={4}>
-                          No applications for this venue yet
-                        </Text>
-                      )}
-                    </Box>
-                  )}
-                </Box>
-              ))
-            )}
-          </Stack>
+                    {selectedVenue === venue.name && (
+                      <Box mt={4} ml={8}>
+                          <Button size="sm" mb={3} onClick={sortByHighestRating}>
+                              Sort by Reputation Rating (<TiStar />)
+                          </Button>
+
+                          {applicantsLoading ? (
+                              <Center mt={4} flexDirection="column" gap={4}>
+                                  <Spinner size="xl" color="blue.500" />
+                                  <Text color="gray.500">Loading applications...</Text>
+                              </Center>
+                          ) : applicants.length > 0 ? (
+                              <Stack gap={4}>
+                                  {applicants.map((applicant) => (
+                                      <ApplicantCard
+                                          key={applicant.id}
+                                          applicant={applicant}
+                                          onUpdate={handleUpdate}
+                                      />
+                                  ))}
+                              </Stack>
+                          ) : (
+                              <Text color="gray.500" p={4}>
+                                  No applications for this venue yet
+                              </Text>
+                          )}
+                      </Box>
+                    )}
+                  </Box>
+                ))}
+            </Stack>
+          )}
+
         </Container>
       </div>
       <FooterContainer />
