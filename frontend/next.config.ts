@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   reactStrictMode: true,
   images: {
-    qualities: [75, 100],  // ADD 100 here
+    qualities: [75, 100],
   },
 };
 

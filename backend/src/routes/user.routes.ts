@@ -9,6 +9,6 @@ router.post("/signin", signIn);
 router.get("/profile/:id", getProfile);
 router.put("/profile/:id", updateProfile);
 router.put("/rating/:id", updateUserRating);
-router.put("/documents/:id", updateUserDocuments); // ADD THIS
+router.put("/documents/:id", updateUserDocuments); 
 
 export default router;
