@@ -1,19 +1,26 @@
 import HeaderContainer from "@/components/header";
 import FooterContainer from "@/components/footer";
-import { Container, Text } from "@chakra-ui/react";
+import { Container, Text, HStack, Button } from "@chakra-ui/react";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { Applicant } from "@/components/applicant-card";
 import { useEffect } from "react";
 import ApplicantStats from "@/components/applicant-stats";
+import VendorCharts from "@/components/vendor-charts";
+import { TfiViewListAlt } from "react-icons/tfi";
 
 export default function ApplicantChartsPage() {
     const [applicants, setApplicants] = useState<Applicant[]>([]);
     const { currentUser } = useAuth();
+    const [allHirers, setAllHirers] = useState(false);
 
      useEffect(() => {
         if (currentUser) {
-            fetch(`http://localhost:3001/api/bookings/vendor-stats/${currentUser.id}`)
+            const url = allHirers 
+                ? "http://localhost:3001/api/bookings/all"
+                : `http://localhost:3001/api/bookings/vendor-stats/${currentUser.id}`;            
+
+            fetch(url)
                 .then(res => res.json())
                 .then(data => {
                     const mapped = data.map((booking: any) => ({
@@ -39,7 +46,7 @@ export default function ApplicantChartsPage() {
                 })
                 .catch(console.error);
         }
-    }, [currentUser]);
+    }, [currentUser, allHirers]);
 
     return (
         <div className="vendorsPage min-h-screen flex flex-col">
@@ -50,7 +57,25 @@ export default function ApplicantChartsPage() {
                         Applicant Stats
                     </Text>
 
+                    <HStack gap={2} mb={4}>
+                        <Button 
+                            size="sm"
+                            colorPalette={!allHirers ? "blue" : "gray"}
+                            onClick={() => setAllHirers(false)}
+                        >
+                            My Venues Only
+                        </Button>
+                        <Button
+                            size="sm"
+                            colorPalette={allHirers ? "blue" : "gray"}
+                            onClick={() => setAllHirers(true)}
+                        >
+                            All Venues
+                        </Button>
+                    </HStack>
+
                     <ApplicantStats applicants={applicants} />
+                    {currentUser && <VendorCharts vendorId={currentUser.id}/>}
                 </Container>
             </div>
             <FooterContainer />

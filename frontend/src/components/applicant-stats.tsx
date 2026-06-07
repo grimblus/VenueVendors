@@ -8,27 +8,21 @@ interface ApplicantStatsProps {
 
 export default function ApplicantStats({ applicants }: ApplicantStatsProps) {
     if (applicants.length === 0) {
-        return <Text color="gray.500" mt={6}>No applicants to display statistics for.</Text>;
+        return <Text color="gray.500" mt={6}>No applicants to display stats for.</Text>;
     }
-
-    const allHirerIds = [...new Set(applicants.map(a => a.hirerId))];
 
     const selected = applicants.filter(a => a.selected || a.approved);
 
     const selectedHirerIds = new Set(
         applicants
-            .filter(a => a.selected || a.approved)
-            .map(a => a.hirerId)
+            .filter(applicant => applicant.selected || applicant.approved)
+            .map(applicant => applicant.hirerId)
     );
 
-    const neverSelected = applicants.filter(a => 
-        !selectedHirerIds.has(a.hirerId) && !a.rejected
-    );
-
-    const uniqueNeverSelected = applicants.filter((a, index, self) =>
-        !selectedHirerIds.has(a.hirerId) &&
-        !a.rejected &&
-        index === self.findIndex(t => t.hirerId === a.hirerId)
+    const neverSelected = applicants.filter((applicant, index, self) =>
+        !selectedHirerIds.has(applicant.hirerId) &&
+        !applicant.rejected &&
+        index === self.findIndex(t => t.hirerId === applicant.hirerId)
     );
 
     const mostChosen = selected.length > 0
@@ -98,22 +92,21 @@ export default function ApplicantStats({ applicants }: ApplicantStatsProps) {
             <Card.Root>
                 <Card.Body>
                     <Text fontWeight="semibold" color="gray.500" mb={2}>
-                        Applicants Not Yet Selected ({uniqueNeverSelected.length})
+                        Unselected Applicants
                     </Text>
-                    {uniqueNeverSelected.length > 0 ? (
+                    {neverSelected.length > 0 ? (
                         <Stack gap={2}>
-                            {uniqueNeverSelected.map((a, i) => (
+                            {neverSelected.map((applicant, i) => (
                                 <HStack key={i} justify="space-between">
                                     <Box>
-                                        <Text fontWeight="bold">{a.name}</Text>
-                                        <Text color="gray.500">{a.email}</Text>
+                                        <Text fontWeight="bold">{applicant.name}</Text>
+                                        <Text color="gray.500">{applicant.email}</Text>
                                     </Box>
-                                    <Badge colorPalette="gray">Pending</Badge>
                                 </HStack>
                             ))}
                         </Stack>
                     ) : (
-                        <Text color="gray.500">All applicants have been processed</Text>
+                        <Text color="gray.500">All applicants have been selected</Text>
                     )}
                 </Card.Body>
             </Card.Root>
