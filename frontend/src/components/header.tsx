@@ -7,7 +7,7 @@ import NextLink from "next/link"
 
 const HeaderContainer = () => {
     return ( 
-        <Box bg="bg.panel" w="100%" p="3">
+        <Box bg="gray.800" w="full" p="3">
             <HStack w="100%" align="center">
                 <NextLink href="/">
                     <HStack gap={2}>
