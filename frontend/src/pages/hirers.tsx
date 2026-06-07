@@ -182,6 +182,10 @@ export default function HirerPage() {
         setPreferredVenues(data);
     };
 
+    const suitableEventKeywords = [...new Set(
+        venues.flatMap(v => v.suitableEvents || [])
+    )].sort();
+
     return (
         <div className="hirersPage min-h-screen flex flex-col">
             <HeaderContainer/>
@@ -367,7 +371,9 @@ export default function HirerPage() {
                         placeholder="Search for venues..." 
                         onSearch={(query) => setSearchQuery(query)} 
                         onDomainChange={(domain) => setSearchDomain(domain)} 
-                        hasDomain={true}/>
+                        hasDomain={true}
+                        suitableEventKeywords={suitableEventKeywords}
+                    />
                     <Center mt={4}>
                         Currently searching for: {searchQuery} in: {searchDomain}
                     </Center>                        
