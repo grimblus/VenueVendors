@@ -4,6 +4,7 @@ import {
   Fieldset,
   Input,
   Stack,
+  Center,
 } from "@chakra-ui/react"
 import { useState, EventHandler, useEffect } from "react"
 import FooterContainer from "@/components/footer";
@@ -86,8 +87,9 @@ export default function Signin(){
     };
 
     return (
-      <div className='signinPage'>
+      <div className="signinPage min-h-screen flex flex-col">
         <HeaderContainer />
+        <div className="mainContent flex flex-1 flex-col items-center pt-12">
           <Fieldset.Root size="lg" maxW="md">
             <Stack>
               <Fieldset.Legend>Enter your login credentials</Fieldset.Legend>
@@ -107,11 +109,14 @@ export default function Signin(){
               </Field.Root>
             </Fieldset.Content>
 
-            <Button alignSelf="flex-start" onClick={handleSubmit}>
-              Submit
-            </Button>
-          </Fieldset.Root>
+            <Center>
+              <Button alignSelf="flex-start" onClick={handleSubmit}>
+                Submit
+              </Button>
+            </Center>
+          </Fieldset.Root> 
+          </div>
           <FooterContainer />
-        </div>
+      </div>
   )
 }

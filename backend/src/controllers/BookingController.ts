@@ -181,6 +181,36 @@ export const updateBooking = async (req: Request, res: Response) => {
     return res.status(200).json({ message: "Booking updated successfully", booking });
 };
 
+//for specific vendor stats
+export const getVendorBookingStats = async (req: Request, res: Response) => {
+    try {
+        const vendorId = Number(req.params.vendorId);
+
+        const bookings = await bookingRepo.find({
+            where: { venue: { vendor: { id: vendorId } } },
+            relations: { venue: true, hirer: true }
+        });
+
+        return res.json(bookings);
+    } catch (error) {
+        console.error("Error fetching vendor stats:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+//for universal stats
+export const getAllBookings = async (req: Request, res: Response) => {
+    try {
+        const bookings = await bookingRepo.find({
+            relations: { venue: true, hirer: true }
+        });
+        return res.json(bookings);
+    } catch (error) {
+        console.error("Error fetching all bookings:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 // calculates score based on submitted documents
 const calculateComplianceScore = (
     driversLicense: string | null,

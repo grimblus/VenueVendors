@@ -51,7 +51,10 @@ const Navigation = () => {
 
             {/* for vendor only */}
             {currentUser?.role === "vendor" && (
-                <Link as={NextLink} href="/vendors">Vendor</Link>
+                <>
+                    <Link as={NextLink} href="/vendors">Vendor</Link>
+                    <Link as={NextLink} href="/applicantcharts">Applicant Charts</Link>
+                </>
             )}
 
             {/* for admin only */}
@@ -59,6 +62,7 @@ const Navigation = () => {
                 <>
                     <Link as={NextLink} href="/hirers">Hirer</Link>
                     <Link as={NextLink} href="/vendors">Vendor</Link>
+                    <Link as={NextLink} href="/applicantcharts">Applicant Charts</Link>
                 </>
             )}
 
