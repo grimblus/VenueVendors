@@ -3,9 +3,9 @@ import FooterContainer from "@/components/footer";
 import { Container, Text } from "@chakra-ui/react";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
-import VendorCharts from "@/components/vendor-charts";
 import { Applicant } from "@/components/applicant-card";
 import { useEffect } from "react";
+import ApplicantStats from "@/components/applicant-stats";
 
 export default function ApplicantChartsPage() {
     const [applicants, setApplicants] = useState<Applicant[]>([]);
@@ -50,7 +50,7 @@ export default function ApplicantChartsPage() {
                         Applicant Stats
                     </Text>
 
-                    <VendorCharts applicants={applicants} />
+                    <ApplicantStats applicants={applicants} />
                 </Container>
             </div>
             <FooterContainer />

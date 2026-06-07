@@ -2,11 +2,11 @@ import { Box, Text, Stack, Card, HStack, Badge } from "@chakra-ui/react";
 import { TiStar } from "react-icons/ti";
 import { Applicant } from "./applicant-card";
 
-interface VendorChartsProps {
+interface ApplicantStatsProps {
     applicants: Applicant[];
 }
 
-export default function VendorCharts({ applicants }: VendorChartsProps) {
+export default function ApplicantStats({ applicants }: ApplicantStatsProps) {
     if (applicants.length === 0) {
         return <Text color="gray.500" mt={6}>No applicants to display statistics for.</Text>;
     }
