@@ -42,27 +42,27 @@ const Navigation = () => {
 
     return (
         <HStack gap={4}>
-            <Link as={NextLink} href="/">Home</Link>
+            <Link as={NextLink} href="/" color="white">Home</Link>
 
             {/* for hirer only */}
             {currentUser?.role === "hirer" && (
-                <Link as={NextLink} href="/hirers">Hirer</Link>
+                <Link as={NextLink} href="/hirers" color="white">Hirer</Link>
             )}
 
             {/* for vendor only */}
             {currentUser?.role === "vendor" && (
                 <>
-                    <Link as={NextLink} href="/vendors">Vendor</Link>
-                    <Link as={NextLink} href="/applicantcharts">Applicant Charts</Link>
+                    <Link as={NextLink} href="/vendors" color="white">Vendor</Link>
+                    <Link as={NextLink} href="/applicantcharts" color="white">Applicant Charts</Link>
                 </>
             )}
 
             {/* for admin only */}
             {currentUser?.role === "admin" && (
                 <>
-                    <Link as={NextLink} href="/hirers">Hirer</Link>
-                    <Link as={NextLink} href="/vendors">Vendor</Link>
-                    <Link as={NextLink} href="/applicantcharts">Applicant Charts</Link>
+                    <Link as={NextLink} href="/hirers" color="white">Hirer</Link>
+                    <Link as={NextLink} href="/vendors" color="white">Vendor</Link>
+                    <Link as={NextLink} href="/applicantcharts" color="white">Applicant Charts</Link>
                 </>
             )}
 
@@ -71,15 +71,15 @@ const Navigation = () => {
                     <Text fontWeight="semibold" color="green.400">
                         Welcome, {currentUser.firstName} {currentUser.lastName}!
                     </Text>
-                    <Link as={NextLink} href="/profile">Profile</Link>
+                    <Link as={NextLink} href="/profile" color="white">Profile</Link>
                     <Button variant="plain" colorPalette="red" onClick={handleLogout}>
                         Logout
                     </Button>
                 </>
             ) : (
                 <>
-                    <Link as={NextLink} href="/signup">Sign-up</Link>
-                    <Link as={NextLink} href="/signin">Sign-in</Link>
+                    <Link as={NextLink} href="/signup" color="white">Sign-up</Link>
+                    <Link as={NextLink} href="/signin" color="white">Sign-in</Link>
                 </>
             )}
         </HStack>
