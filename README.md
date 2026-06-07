@@ -12,3 +12,5 @@ Enrolled prac: pra01-03-Fri-12:30-Veronika_Stephanie
 
 github url:
 https://github.com/rmit-fsd-2026-s1/a2-fsd-pra01-06-wed-2-30pm-yousaf-t25
+
+NOTE: There are two copies of the user stories spreadsheet, they both contain the same data but in different formats as the csv was a bit difficult to read
