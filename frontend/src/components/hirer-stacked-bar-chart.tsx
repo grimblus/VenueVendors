@@ -26,7 +26,7 @@ export default function HirerStackedBarChart({ bookings }: HirerStackedBarChartP
 
     return (
         <Box>
-            <Text fontWeight="bold" mb={4}>All Hirers Across All Venues (Stacked Bar Chart)</Text>
+            <Text fontWeight="bold" mb={4}>All Venues for Hirers</Text>
             <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={data()}>
                     <CartesianGrid strokeDasharray="3 3" />

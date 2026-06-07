@@ -28,7 +28,7 @@ export default function HirerBarChart({ bookings }: HirerBarChartProps) {
 
     return (
         <Box>
-            <Text fontWeight="bold" mb={4}>Hirers per Venue (Bar Chart)</Text>
+            <Text fontWeight="bold" mb={4}>Hirers per Venue</Text>
             <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={data()}>
                     <CartesianGrid strokeDasharray="3 3" />

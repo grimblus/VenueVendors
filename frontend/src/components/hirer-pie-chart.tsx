@@ -21,7 +21,7 @@ export default function HirerPieChart({ bookings }: HirerPieChartProps) {
 
     return (
         <Box>
-            <Text fontWeight="bold" mb={4}>Most & Least Active Hirers (Pie Chart)</Text>
+            <Text fontWeight="bold" mb={4}>Most & Least Active Hirers</Text>
             <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                     <Pie
